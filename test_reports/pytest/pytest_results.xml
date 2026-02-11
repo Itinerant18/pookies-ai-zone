@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.780" timestamp="2026-02-11T08:42:44.712114+00:00" hostname="agent-env-e50734f3-8e60-4195-896e-b69f4ec95e6c"><testcase classname="" name="tests.test_ai_tools_api" time="0.000"><error message="collection failure">tests/test_ai_tools_api.py:9: in &lt;module&gt;
+    BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL').rstrip('/')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'rstrip'</error></testcase></testsuite></testsuites>
