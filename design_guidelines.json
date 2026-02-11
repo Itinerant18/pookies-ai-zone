@@ -1,0 +1,185 @@
+{
+  "design_system": {
+    "identity": {
+      "name": "AI Tool Directory",
+      "tone": "Technical, Minimalist, Efficient",
+      "archetype": "Swiss & High-Contrast (Archetype 4)",
+      "target_audience": "Developers, Designers, Tech Enthusiasts"
+    },
+    "typography": {
+      "font_family_primary": "System",
+      "font_family_code": "System (Monospace) or JetBrains Mono if available",
+      "sizes": {
+        "xs": 12,
+        "sm": 14,
+        "base": 16,
+        "lg": 18,
+        "xl": 24,
+        "2xl": 32,
+        "3xl": 40
+      },
+      "weights": {
+        "regular": "400",
+        "medium": "500",
+        "semibold": "600",
+        "bold": "700"
+      },
+      "line_heights": {
+        "tight": 1.2,
+        "normal": 1.5,
+        "relaxed": 1.75
+      }
+    },
+    "colors": {
+      "light": {
+        "background": "#FFFFFF",
+        "surface": "#F4F4F5",
+        "surface_highlight": "#E4E4E7",
+        "border": "#E4E4E7",
+        "text_primary": "#09090B",
+        "text_secondary": "#71717A",
+        "primary": "#18181B",
+        "primary_foreground": "#FAFAFA",
+        "accent": "#2563EB",
+        "danger": "#EF4444"
+      },
+      "dark": {
+        "background": "#09090B",
+        "surface": "#18181B",
+        "surface_highlight": "#27272A",
+        "border": "#27272A",
+        "text_primary": "#FAFAFA",
+        "text_secondary": "#A1A1AA",
+        "primary": "#FAFAFA",
+        "primary_foreground": "#09090B",
+        "accent": "#3B82F6",
+        "danger": "#F87171"
+      },
+      "static": {
+        "overlay": "rgba(0,0,0,0.5)",
+        "transparent": "transparent"
+      }
+    },
+    "spacing": {
+      "xs": 4,
+      "s": 8,
+      "m": 16,
+      "l": 24,
+      "xl": 32,
+      "2xl": 48
+    },
+    "borders": {
+      "radius": {
+        "sm": 6,
+        "md": 12,
+        "lg": 16,
+        "full": 9999
+      },
+      "width": {
+        "thin": 0.5,
+        "base": 1
+      }
+    },
+    "shadows": {
+      "sm": {
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 1 },
+        "shadowOpacity": 0.18,
+        "shadowRadius": 1.0,
+        "elevation": 1
+      },
+      "md": {
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 2 },
+        "shadowOpacity": 0.25,
+        "shadowRadius": 3.84,
+        "elevation": 5
+      }
+    }
+  },
+  "layout_strategies": {
+    "grid_system": {
+      "bento_grid": "Use Flexbox with wrap or FlatList with numColumns=2. Items should have flex: 1. Use gap for spacing.",
+      "list_view": "Standard FlatList with ItemSeparatorComponent.",
+      "safe_area": "Always wrap screen content in SafeAreaView or use useSafeAreaInsets."
+    },
+    "navigation": {
+      "type": "Bottom Tab Bar (expo-router tabs)",
+      "style": "Minimalist, no labels if icons are clear, or small labels. Active state: Primary Color. Inactive: Text Secondary."
+    }
+  },
+  "components": {
+    "ToolCard": {
+      "style": "Minimalist card. 1px border. No shadow in list view. Subtle shadow on hover/press.",
+      "content": "Icon (left/top), Title (bold), Category Pill, Description (truncated), Favorite Button (absolute top-right)."
+    },
+    "CategoryPill": {
+      "style": "Rounded 'full'. Border 1px. Background Surface. Text Small.",
+      "interaction": "Active state: Background Primary, Text Primary Foreground."
+    },
+    "SearchBar": {
+      "style": "Spotlight style. Height 44px. Rounded lg. Background Surface Highlight. Icon Left. Clear button Right.",
+      "placeholder_color": "text_secondary"
+    },
+    "Button": {
+      "variants": {
+        "primary": "Background Primary, Text Primary Foreground, Rounded md, Height 48px.",
+        "outline": "Border 1px, Text Primary, Background Transparent."
+      }
+    }
+  },
+  "image_assets": {
+    "categories": {
+      "Editors & IDEs": "https://images.unsplash.com/photo-1517241034903-9a4c3ab12f00?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwzfHxkYXJrJTIwbWluaW1hbCUyMGNvZGluZyUyMGFic3RyYWN0fGVufDB8fHx8MTc3MDc5ODk0Mnww&ixlib=rb-4.1.0&q=85",
+      "Web & App Builders": "https://images.unsplash.com/photo-1762716514229-739f6769e282?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB1aSUyMHV4JTIwZGVzaWduJTIwYWJzdHJhY3R8ZW58MHx8fHwxNzcwNzk4OTQzfDA&ixlib=rb-4.1.0&q=85",
+      "Assistants & Agents": "https://images.unsplash.com/photo-1764336312138-14a5368a6cd3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwzfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlJTIwbmV1cmFsJTIwbmV0d29yayUyMGFic3RyYWN0fGVufDB8fHx8MTc3MDc5ODk0M3ww&ixlib=rb-4.1.0&q=85",
+      "Design & UI": "https://images.unsplash.com/photo-1760008487295-ad217c9d5b18?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjB1aSUyMHV4JTIwZGVzaWduJTIwYWJzdHJhY3R8ZW58MHx8fHwxNzcwNzk4OTQzfDA&ixlib=rb-4.1.0&q=85",
+      "Featured": "https://images.unsplash.com/photo-1736325263301-488931888151?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwyfHxkYXJrJTIwbWluaW1hbCUyMGNvZGluZyUyMGFic3RyYWN0fGVufDB8fHx8MTc3MDc5ODk0Mnww&ixlib=rb-4.1.0&q=85"
+    },
+    "placeholders": {
+      "tool_icon": "https://images.unsplash.com/photo-1668713239048-0746aac1fec1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbWluaW1hbCUyMGNvZGluZyUyMGFic3RyYWN0fGVufDB8fHx8MTc3MDc5ODk0Mnww&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "data_seeding": {
+    "categories": [
+      "Editors & IDEs",
+      "Web & App Builders",
+      "Assistants & Agents",
+      "Design & UI",
+      "Other"
+    ],
+    "tools_map": {
+      "Editors & IDEs": ["Cursor", "Windsurf", "Void", "Trae", "Continue.dev", "CodeGeeX", "Qoder", "Kilo Code", "Atoms", "Zed (implied from Context)", "Base44"],
+      "Web & App Builders": ["Bolt.new", "Replit", "Lovable", "Bolt.diy", "Blink.new", "FlutterFlow", "A0", "Firebase Studio", "AppGen", "Marblism"],
+      "Assistants & Agents": ["GitHub Copilot", "Dyad", "Chef by Convex", "Manus", "MindStudio", "Google Stitch", "Memex", "Mocha", "Kiro", "Pythagora", "Workik"],
+      "Design & UI": ["v0", "Figma Make", "Tile.dev", "Emergent", "Codia AI", "Code Parrot", "Anima", "Kromio", "Rork"]
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use StyleSheet.create({}) for ALL styles. DO NOT use inline styles unless for dynamic values.",
+    "Implement a 'ThemeContext' to handle Dark/Light mode switching based on system preference or user toggle.",
+    "Use 'AsyncStorage' to persist 'Favorites' locally.",
+    "For the 'Search' feature, filter by Tool Name, Description, and Category.",
+    "On 'Tool Detail' screen, use 'Linking.openURL' to open external links.",
+    "Use the provided image URLs for category backgrounds or hero sections.",
+    "For Tool Logos: If no specific URL is available, render a colored square with the first letter of the tool name using the Primary font.",
+    "Ensure 'hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}' on small TouchableOpacity elements.",
+    "Use 'SafeAreaView' from 'react-native-safe-area-context'.",
+    "Use 'Expo Image' for better caching and performance."
+  ],
+  "universal_guidelines": {
+    "testing": {
+      "attribute": "testID",
+      "rule": "All interactive elements must have a unique testID (kebab-case)."
+    },
+    "accessibility": {
+      "rule": "All touchables must have accessibilityLabel and accessibilityRole."
+    },
+    "performance": {
+      "rule": "Use FlatList for lists, not ScrollView with map(). Use React.memo for list items."
+    },
+    "style": {
+      "rule": "No 'text-align: center' globally. Center only when hierarchically necessary (e.g. Empty States)."
+    }
+  }
+}
