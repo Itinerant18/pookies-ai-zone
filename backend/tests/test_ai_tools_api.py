@@ -6,7 +6,23 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL').rstrip('/')
+# Get BASE_URL from environment or construct from frontend .env
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL')
+if not BASE_URL:
+    # Try reading from frontend .env
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
+                    BASE_URL = line.split('=', 1)[1].strip().strip('"')
+                    break
+    except:
+        pass
+
+if not BASE_URL:
+    raise ValueError("EXPO_PUBLIC_BACKEND_URL not found in environment or frontend .env")
+
+BASE_URL = BASE_URL.rstrip('/')
 
 class TestHealthEndpoint:
     """Test API root endpoint"""
