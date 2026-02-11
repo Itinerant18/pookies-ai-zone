@@ -83,7 +83,7 @@ class TestToolsEndpoint:
     def test_filter_by_category(self):
         """Test category filter"""
         category = "Design & UI"
-        response = requests.get(f"{BASE_URL}/api/tools?category={category}")
+        response = requests.get(f"{BASE_URL}/api/tools", params={"category": category})
         assert response.status_code == 200
         
         tools = response.json()
@@ -153,8 +153,8 @@ class TestCategoriesEndpoint:
         categories = categories_response.json()
         
         for cat in categories:
-            # Get tools for this category
-            tools_response = requests.get(f"{BASE_URL}/api/tools?category={cat['name']}")
+            # Get tools for this category (use params dict for proper URL encoding)
+            tools_response = requests.get(f"{BASE_URL}/api/tools", params={"category": cat['name']})
             assert tools_response.status_code == 200
             tools = tools_response.json()
             
