@@ -13,23 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  url: string;
-  icon_letter: string;
-  color: string;
-}
-
-interface CategoryData {
-  name: string;
-  count: number;
-}
+import { Image } from 'expo-image';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
+import { Tool, CategoryData } from '../types';
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Editors & IDEs': 'code-slash-outline',
@@ -40,30 +27,14 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function CategoriesScreen() {
   const router = useRouter();
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [tools, setTools] = useState<Tool[]>([]);
+  
+  // Use Convex Queries
+  const categories = useQuery(api.tools.getCategories);
+  const tools = useQuery(api.tools.get, {});
+  
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const fetchData = useCallback(async () => {
-    try {
-      const [catRes, toolsRes] = await Promise.all([
-        fetch(`${API_URL}/api/categories`),
-        fetch(`${API_URL}/api/tools`),
-      ]);
-      const catData = await catRes.json();
-      const toolsData = await toolsRes.json();
-      setCategories(catData);
-      setTools(toolsData);
-    } catch (err) {
-      console.error('Failed to fetch data:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
 
   const loadFavorites = useCallback(async () => {
     try {
@@ -75,7 +46,6 @@ export default function CategoriesScreen() {
   }, []);
 
   useEffect(() => {
-    fetchData();
     loadFavorites();
   }, []);
 
@@ -91,14 +61,14 @@ export default function CategoriesScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchData();
     loadFavorites();
-  }, []);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, [loadFavorites]);
 
   const getToolsByCategory = (category: string) =>
-    tools.filter(t => t.category === category);
+    (tools || []).filter((t: Tool) => t.category === category);
 
-  if (loading) {
+  if (categories === undefined || tools === undefined) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -159,19 +129,27 @@ export default function CategoriesScreen() {
 
               {isExpanded && (
                 <View style={styles.toolsList}>
-                  {catTools.map(tool => (
+                  {catTools.map((tool: Tool) => (
                     <TouchableOpacity
-                      key={tool.id}
-                      testID={`category-tool-${tool.id}`}
+                      key={tool._id}
+                      testID={`category-tool-${tool._id}`}
                       style={styles.toolRow}
-                      onPress={() => router.push(`/tool/${tool.id}`)}
+                      onPress={() => router.push(`/tool/${tool._id}`)}
                       activeOpacity={0.7}
                       accessibilityLabel={`Open ${tool.name}`}
                       accessibilityRole="button"
                     >
                       <View style={styles.toolRowLeft}>
-                        <View style={[styles.toolDot, { backgroundColor: tool.color }]}>
-                          <Text style={styles.toolDotLetter}>{tool.icon_letter}</Text>
+                        <View style={[styles.toolDot, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
+                          {tool.icon_url ? (
+                            <Image
+                              source={{ uri: tool.icon_url }}
+                              style={styles.toolRowIcon}
+                              contentFit="contain"
+                            />
+                          ) : (
+                            <Text style={styles.toolDotLetter}>{tool.icon_letter}</Text>
+                          )}
                         </View>
                         <View style={styles.toolRowInfo}>
                           <Text style={styles.toolRowName}>{tool.name}</Text>
@@ -180,16 +158,16 @@ export default function CategoriesScreen() {
                       </View>
                       <View style={styles.toolRowRight}>
                         <TouchableOpacity
-                          testID={`cat-fav-btn-${tool.id}`}
-                          onPress={() => toggleFavorite(tool.id)}
+                          testID={`cat-fav-btn-${tool._id}`}
+                          onPress={() => toggleFavorite(tool._id)}
                           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                          accessibilityLabel={favorites.includes(tool.id) ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
+                          accessibilityLabel={favorites.includes(tool._id) ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
                           accessibilityRole="button"
                         >
                           <Ionicons
-                            name={favorites.includes(tool.id) ? 'heart' : 'heart-outline'}
+                            name={favorites.includes(tool._id) ? 'heart' : 'heart-outline'}
                             size={18}
-                            color={favorites.includes(tool.id) ? '#EF4444' : '#71717A'}
+                            color={favorites.includes(tool._id) ? '#EF4444' : '#71717A'}
                           />
                         </TouchableOpacity>
                         <Ionicons name="chevron-forward" size={16} color="#71717A" />
@@ -298,6 +276,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  toolRowIcon: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
   },
   toolDotLetter: {
     fontSize: 14,

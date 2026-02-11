@@ -13,55 +13,44 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  url: string;
-  icon_letter: string;
-  color: string;
-  featured: boolean;
-}
+import { Image } from 'expo-image';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import { Tool } from '../../types';
 
 export default function ToolDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const [tool, setTool] = useState<Tool | null>(null);
+  
+  // Use Convex Query
+  // We use "skip" if id is missing to avoid query errors
+  const tool = useQuery(api.tools.getById, id ? { id } : "skip");
+  
   const [isFavorite, setIsFavorite] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTool = async () => {
+    const checkFavorite = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/tools/${id}`);
-        const data = await res.json();
-        setTool(data);
-
         const stored = await AsyncStorage.getItem('favorites');
         const favs: string[] = stored ? JSON.parse(stored) : [];
-        setIsFavorite(favs.includes(id as string));
+        if (id) setIsFavorite(favs.includes(id));
       } catch (err) {
-        console.error('Failed to fetch tool:', err);
-      } finally {
-        setLoading(false);
+        console.error('Failed to load favorites:', err);
       }
     };
-    fetchTool();
+    checkFavorite();
   }, [id]);
 
   const toggleFavorite = useCallback(async () => {
+    if (!id) return;
     const stored = await AsyncStorage.getItem('favorites');
     const favs: string[] = stored ? JSON.parse(stored) : [];
     let newFavs: string[];
-    if (favs.includes(id as string)) {
+    if (favs.includes(id)) {
       newFavs = favs.filter(fid => fid !== id);
       setIsFavorite(false);
     } else {
-      newFavs = [...favs, id as string];
+      newFavs = [...favs, id];
       setIsFavorite(true);
     }
     await AsyncStorage.setItem('favorites', JSON.stringify(newFavs));
@@ -73,7 +62,7 @@ export default function ToolDetailScreen() {
     }
   }, [tool]);
 
-  if (loading) {
+  if (tool === undefined) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -84,7 +73,7 @@ export default function ToolDetailScreen() {
     );
   }
 
-  if (!tool) {
+  if (tool === null) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -139,8 +128,16 @@ export default function ToolDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Hero */}
         <View style={styles.heroSection}>
-          <View style={[styles.heroIcon, { backgroundColor: tool.color }]}>
-            <Text style={styles.heroIconLetter}>{tool.icon_letter}</Text>
+          <View style={[styles.heroIcon, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
+            {tool.icon_url ? (
+              <Image
+                source={{ uri: tool.icon_url }}
+                style={styles.heroIconImage}
+                contentFit="contain"
+              />
+            ) : (
+              <Text style={styles.heroIconLetter}>{tool.icon_letter}</Text>
+            )}
           </View>
           <Text style={styles.heroName}>{tool.name}</Text>
           <View style={styles.heroPill}>
@@ -254,6 +251,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  heroIconImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
   },
   heroIconLetter: {
     fontSize: 36,

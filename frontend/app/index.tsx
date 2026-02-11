@@ -15,19 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  url: string;
-  icon_letter: string;
-  color: string;
-  featured: boolean;
-}
+import { Image } from 'expo-image';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
+import { Tool } from '../types';
 
 const ToolCard = React.memo(({ tool, isFavorite, onToggleFavorite, onPress }: {
   tool: Tool;
@@ -36,20 +27,29 @@ const ToolCard = React.memo(({ tool, isFavorite, onToggleFavorite, onPress }: {
   onPress: (id: string) => void;
 }) => (
   <TouchableOpacity
-    testID={`tool-card-${tool.id}`}
+    testID={`tool-card-${tool._id}`}
     style={styles.toolCard}
-    onPress={() => onPress(tool.id)}
+    onPress={() => onPress(tool._id)}
     activeOpacity={0.7}
     accessibilityLabel={`Open ${tool.name}`}
     accessibilityRole="button"
   >
     <View style={styles.cardHeader}>
-      <View style={[styles.iconBox, { backgroundColor: tool.color }]}>
-        <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
+      <View style={[styles.iconBox, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
+        {tool.icon_url ? (
+          <Image
+            source={{ uri: tool.icon_url }}
+            style={styles.toolIconImage}
+            contentFit="contain"
+            transition={200}
+          />
+        ) : (
+          <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
+        )}
       </View>
       <TouchableOpacity
-        testID={`favorite-btn-${tool.id}`}
-        onPress={() => onToggleFavorite(tool.id)}
+        testID={`favorite-btn-${tool._id}`}
+        onPress={() => onToggleFavorite(tool._id)}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         accessibilityLabel={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
         accessibilityRole="button"
@@ -73,26 +73,17 @@ const CATEGORIES = ['All', 'Editors & IDEs', 'Web & App Builders', 'Assistants &
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [tools, setTools] = useState<Tool[]>([]);
-  const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Use Convex Query
+  const tools = useQuery(api.tools.get, { 
+    search: search.trim() || undefined,
+    category: activeCategory === 'All' ? undefined : activeCategory
+  });
+  
   const [refreshing, setRefreshing] = useState(false);
-
-  const fetchTools = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/tools`);
-      const data = await res.json();
-      setTools(data);
-    } catch (err) {
-      console.error('Failed to fetch tools:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
 
   const loadFavorites = useCallback(async () => {
     try {
@@ -104,23 +95,8 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    fetchTools();
     loadFavorites();
   }, []);
-
-  useEffect(() => {
-    let result = tools;
-    if (activeCategory !== 'All') {
-      result = result.filter(t => t.category === activeCategory);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        t => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)
-      );
-    }
-    setFilteredTools(result);
-  }, [tools, search, activeCategory]);
 
   const toggleFavorite = useCallback(async (toolId: string) => {
     setFavorites(prev => {
@@ -134,22 +110,23 @@ export default function HomeScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchTools();
+    // Convex automatically updates, but we can re-fetch favorites
     loadFavorites();
-  }, []);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, [loadFavorites]);
 
-  const featuredTools = tools.filter(t => t.featured);
+  const featuredTools = tools ? tools.filter((t: Tool) => t.featured) : [];
 
   const renderToolCard = useCallback(({ item }: { item: Tool }) => (
     <ToolCard
       tool={item}
-      isFavorite={favorites.includes(item.id)}
+      isFavorite={favorites.includes(item._id)}
       onToggleFavorite={toggleFavorite}
       onPress={(id) => router.push(`/tool/${id}`)}
     />
   ), [favorites, toggleFavorite, router]);
 
-  if (loading) {
+  if (tools === undefined) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -165,9 +142,9 @@ export default function HomeScreen() {
       <StatusBar barStyle="light-content" />
       <FlatList
         testID="tools-list"
-        data={filteredTools}
+        data={tools}
         renderItem={renderToolCard}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
@@ -246,19 +223,27 @@ export default function HomeScreen() {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   data={featuredTools}
-                  keyExtractor={item => item.id}
+                  keyExtractor={item => item._id}
                   contentContainerStyle={styles.featuredList}
                   renderItem={({ item }) => (
                     <TouchableOpacity
-                      testID={`featured-card-${item.id}`}
+                      testID={`featured-card-${item._id}`}
                       style={styles.featuredCard}
-                      onPress={() => router.push(`/tool/${item.id}`)}
+                      onPress={() => router.push(`/tool/${item._id}`)}
                       activeOpacity={0.7}
                       accessibilityLabel={`Open featured tool ${item.name}`}
                       accessibilityRole="button"
                     >
-                      <View style={[styles.featuredIcon, { backgroundColor: item.color }]}>
-                        <Text style={styles.featuredIconLetter}>{item.icon_letter}</Text>
+                      <View style={[styles.featuredIcon, { backgroundColor: item.icon_url ? 'transparent' : item.color }]}>
+                        {item.icon_url ? (
+                          <Image
+                            source={{ uri: item.icon_url }}
+                            style={styles.toolIconImage}
+                            contentFit="contain"
+                          />
+                        ) : (
+                          <Text style={styles.featuredIconLetter}>{item.icon_letter}</Text>
+                        )}
                       </View>
                       <Text style={styles.featuredName} numberOfLines={1}>{item.name}</Text>
                       <Text style={styles.featuredDesc} numberOfLines={2}>{item.description}</Text>
@@ -273,7 +258,7 @@ export default function HomeScreen() {
               <Text style={styles.sectionTitle}>
                 {activeCategory === 'All' ? 'All Tools' : activeCategory}
               </Text>
-              <Text style={styles.toolCount}>{filteredTools.length}</Text>
+              <Text style={styles.toolCount}>{tools.length}</Text>
             </View>
           </View>
         }
@@ -446,6 +431,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  toolIconImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
   },
   iconLetter: {
     fontSize: 16,

@@ -13,24 +13,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  url: string;
-  icon_letter: string;
-  color: string;
-}
+import { Image } from 'expo-image';
+import { useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
+import { Tool } from '../types';
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  const [favoriteTools, setFavoriteTools] = useState<Tool[]>([]);
+  
+  // Use Convex Query
+  const allTools = useQuery(api.tools.get, {});
+  
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadFavorites = useCallback(async () => {
@@ -38,23 +32,8 @@ export default function FavoritesScreen() {
       const stored = await AsyncStorage.getItem('favorites');
       const ids: string[] = stored ? JSON.parse(stored) : [];
       setFavoriteIds(ids);
-
-      if (ids.length === 0) {
-        setFavoriteTools([]);
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-
-      const res = await fetch(`${API_URL}/api/tools`);
-      const allTools: Tool[] = await res.json();
-      const favTools = allTools.filter(t => ids.includes(t.id));
-      setFavoriteTools(favTools);
     } catch (err) {
       console.error('Failed to load favorites:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
@@ -67,16 +46,19 @@ export default function FavoritesScreen() {
   const removeFavorite = useCallback(async (toolId: string) => {
     const newIds = favoriteIds.filter(id => id !== toolId);
     setFavoriteIds(newIds);
-    setFavoriteTools(prev => prev.filter(t => t.id !== toolId));
     await AsyncStorage.setItem('favorites', JSON.stringify(newIds));
   }, [favoriteIds]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadFavorites();
+    setTimeout(() => setRefreshing(false), 1000);
   }, [loadFavorites]);
 
-  if (loading) {
+  // Filter tools based on favorites
+  const favoriteTools = (allTools || []).filter((t: Tool) => favoriteIds.includes(t._id));
+
+  if (allTools === undefined) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -93,7 +75,7 @@ export default function FavoritesScreen() {
       <FlatList
         testID="favorites-list"
         data={favoriteTools}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />
@@ -108,16 +90,24 @@ export default function FavoritesScreen() {
         }
         renderItem={({ item: tool }) => (
           <TouchableOpacity
-            testID={`fav-tool-${tool.id}`}
+            testID={`fav-tool-${tool._id}`}
             style={styles.toolCard}
-            onPress={() => router.push(`/tool/${tool.id}`)}
+            onPress={() => router.push(`/tool/${tool._id}`)}
             activeOpacity={0.7}
             accessibilityLabel={`Open ${tool.name}`}
             accessibilityRole="button"
           >
             <View style={styles.cardLeft}>
-              <View style={[styles.iconBox, { backgroundColor: tool.color }]}>
-                <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
+              <View style={[styles.iconBox, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
+                {tool.icon_url ? (
+                  <Image
+                    source={{ uri: tool.icon_url }}
+                    style={styles.toolIconImage}
+                    contentFit="contain"
+                  />
+                ) : (
+                  <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
+                )}
               </View>
               <View style={styles.cardInfo}>
                 <Text style={styles.toolName}>{tool.name}</Text>
@@ -128,8 +118,8 @@ export default function FavoritesScreen() {
               </View>
             </View>
             <TouchableOpacity
-              testID={`remove-fav-btn-${tool.id}`}
-              onPress={() => removeFavorite(tool.id)}
+              testID={`remove-fav-btn-${tool._id}`}
+              onPress={() => removeFavorite(tool._id)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={styles.removeBtn}
               accessibilityLabel={`Remove ${tool.name} from favorites`}
@@ -217,6 +207,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  toolIconImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
   },
   iconLetter: {
     fontSize: 18,
