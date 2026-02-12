@@ -19,8 +19,10 @@ interface ToolGridCardProps {
     iconLetter: string;
     color: string;
     isFavorite: boolean;
+    isComparing: boolean;
     onPress: () => void;
     onToggleFavorite: () => void;
+    onToggleCompare: () => void;
     testID?: string;
 }
 
@@ -32,14 +34,16 @@ export function ToolGridCard({
     iconLetter,
     color,
     isFavorite,
+    isComparing,
     onPress,
     onToggleFavorite,
+    onToggleCompare,
     testID,
 }: ToolGridCardProps) {
     return (
         <AnimatedPress
             testID={testID}
-            style={styles.card}
+            style={[styles.card, isComparing && styles.cardComparing]}
             onPress={onPress}
             accessibilityLabel={`Open ${name} `}
             accessibilityRole="button"
@@ -57,17 +61,32 @@ export function ToolGridCard({
                         <Text style={styles.iconLetter}>{iconLetter}</Text>
                     )}
                 </View>
-                <TouchableOpacity
-                    onPress={onToggleFavorite}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    accessibilityLabel={isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
-                >
-                    <Ionicons
-                        name={isFavorite ? 'heart' : 'heart-outline'}
-                        size={18}
-                        color={isFavorite ? liquidGlassTheme.accent.error : liquidGlassTheme.text.tertiary}
-                    />
-                </TouchableOpacity>
+                <View style={styles.headerActions}>
+                    <TouchableOpacity
+                        onPress={onToggleCompare}
+                        style={styles.actionBtn}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        accessibilityLabel={isComparing ? `Remove ${name} from comparison` : `Add ${name} to comparison`}
+                    >
+                        <Ionicons
+                            name={isComparing ? 'stats-chart' : 'stats-chart-outline'}
+                            size={18}
+                            color={isComparing ? liquidGlassTheme.accent.primary : liquidGlassTheme.text.tertiary}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={onToggleFavorite}
+                        style={styles.actionBtn}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        accessibilityLabel={isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+                    >
+                        <Ionicons
+                            name={isFavorite ? 'heart' : 'heart-outline'}
+                            size={18}
+                            color={isFavorite ? liquidGlassTheme.accent.error : liquidGlassTheme.text.tertiary}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
             <Text style={styles.name} numberOfLines={1}>{name}</Text>
             <Text style={styles.desc} numberOfLines={2}>{description}</Text>
@@ -85,11 +104,22 @@ const styles = StyleSheet.create({
         padding: 14,
         marginBottom: spacing.md,
     } as ViewStyle,
+    cardComparing: {
+        borderColor: liquidGlassTheme.accent.primary,
+        borderWidth: 1.5,
+    },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
         marginBottom: 10,
+    },
+    headerActions: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    actionBtn: {
+        padding: 2,
     },
     iconBox: {
         width: 36,

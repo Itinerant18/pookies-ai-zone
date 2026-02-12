@@ -34,6 +34,7 @@ export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [comparing, setComparing] = useState<string[]>([]);
 
   const tools = useQuery(api.tools.get, {
     search: search.trim() || undefined,
@@ -46,8 +47,11 @@ export default function HomeScreen() {
     try {
       const stored = await AsyncStorage.getItem('favorites');
       if (stored) setFavorites(JSON.parse(stored));
+      
+      const storedComparing = await AsyncStorage.getItem('comparing');
+      if (storedComparing) setComparing(JSON.parse(storedComparing));
     } catch (err) {
-      console.error('Failed to load favorites:', err);
+      console.error('Failed to load storage:', err);
     }
   }, []);
 
@@ -62,6 +66,24 @@ export default function HomeScreen() {
         : [...prev, toolId];
       AsyncStorage.setItem('favorites', JSON.stringify(next));
       return next;
+    });
+  }, []);
+
+  const toggleCompare = useCallback(async (toolId: string) => {
+    setComparing(prev => {
+      if (prev.includes(toolId)) {
+        const next = prev.filter(id => id !== toolId);
+        AsyncStorage.setItem('comparing', JSON.stringify(next));
+        return next;
+      } else {
+        if (prev.length >= 4) {
+          // You could add a toast here
+          return prev;
+        }
+        const next = [...prev, toolId];
+        AsyncStorage.setItem('comparing', JSON.stringify(next));
+        return next;
+      }
     });
   }, []);
 
@@ -83,10 +105,12 @@ export default function HomeScreen() {
       iconLetter={item.icon_letter}
       color={item.color}
       isFavorite={favorites.includes(item._id)}
+      isComparing={comparing.includes(item._id)}
       onPress={() => router.push(`/tool/${item._id}`)}
       onToggleFavorite={() => toggleFavorite(item._id)}
+      onToggleCompare={() => toggleCompare(item._id)}
     />
-  ), [favorites, toggleFavorite, router]);
+  ), [favorites, comparing, toggleFavorite, toggleCompare, router]);
 
   if (tools === undefined) {
     return (
