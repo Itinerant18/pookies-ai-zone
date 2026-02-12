@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
+import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, View } from 'react-native';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { liquidGlassTheme } from '../theme/liquidGlass';
+import { GlassTabBar } from '../components/navigation/glass-tab-bar';
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL || "https://placeholder-url.convex.cloud", {
   unsavedChangesWarning: false,
@@ -11,19 +13,16 @@ export default function TabLayout() {
   return (
     <ConvexProvider client={convex}>
       <Tabs
+        tabBar={props => <GlassTabBar {...props} />}
         screenOptions={{
           headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: '#FAFAFA',
-          tabBarInactiveTintColor: '#71717A',
-          tabBarLabelStyle: styles.tabLabel,
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({ color }) => (
               <Ionicons name="grid-outline" size={22} color={color} />
             ),
           }}
@@ -32,7 +31,7 @@ export default function TabLayout() {
           name="categories"
           options={{
             title: 'Categories',
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({ color }) => (
               <Ionicons name="layers-outline" size={22} color={color} />
             ),
           }}
@@ -41,7 +40,7 @@ export default function TabLayout() {
           name="favorites"
           options={{
             title: 'Favorites',
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({ color }) => (
               <Ionicons name="heart-outline" size={22} color={color} />
             ),
           }}
@@ -59,15 +58,21 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#09090B',
-    borderTopColor: '#27272A',
-    borderTopWidth: 0.5,
-    height: 60,
-    paddingBottom: 6,
-    paddingTop: 6,
+    backgroundColor: liquidGlassTheme.surface,
+    borderTopColor: liquidGlassTheme.glass.border,
+    borderTopWidth: 1,
+    height: 64,
+    paddingBottom: 8,
+    paddingTop: 8,
+    shadowColor: liquidGlassTheme.glass.shadow,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
   },
   tabLabel: {
     fontSize: 11,
     fontWeight: '500',
+    color: liquidGlassTheme.text.secondary,
   },
 });

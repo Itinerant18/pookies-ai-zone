@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   StatusBar,
+  ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +18,8 @@ import { Image } from 'expo-image';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool, CategoryData } from '../types';
+import { liquidGlassTheme, glassUtils, spacing } from '../theme/liquidGlass';
+import { Shimmer } from '../components/ui/shimmer';
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Editors & IDEs': 'code-slash-outline',
@@ -25,13 +28,19 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Design & UI': 'color-palette-outline',
 };
 
+const CATEGORY_COLORS: Record<string, string> = {
+  'Editors & IDEs': '#6366F1',
+  'Web & App Builders': '#8B5CF6',
+  'Assistants & Agents': '#10B981',
+  'Design & UI': '#F59E0B',
+};
+
 export default function CategoriesScreen() {
   const router = useRouter();
-  
-  // Use Convex Queries
+
   const categories = useQuery(api.tools.getCategories);
   const tools = useQuery(api.tools.get, {});
-  
+
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -72,8 +81,14 @@ export default function CategoriesScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+        <View style={styles.header}>
+          <Shimmer width={150} height={32} style={{ borderRadius: 8, marginBottom: 8 }} />
+          <Shimmer width={200} height={14} style={{ borderRadius: 4 }} />
+        </View>
+        <View style={{ paddingHorizontal: 16 }}>
+          {[1, 2, 3].map(i => (
+            <Shimmer key={i} width="100%" height={80} style={{ marginBottom: 16, borderRadius: 24 }} />
+          ))}
         </View>
       </SafeAreaView>
     );
@@ -88,7 +103,7 @@ export default function CategoriesScreen() {
         keyExtractor={item => item.name}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={liquidGlassTheme.accent.primary} />
         }
         ListHeaderComponent={
           <View style={styles.header}>
@@ -100,6 +115,7 @@ export default function CategoriesScreen() {
           const isExpanded = expandedCategory === cat.name;
           const catTools = getToolsByCategory(cat.name);
           const iconName = CATEGORY_ICONS[cat.name] || 'apps-outline';
+          const accentColor = CATEGORY_COLORS[cat.name] || liquidGlassTheme.accent.primary;
 
           return (
             <View style={styles.categorySection}>
@@ -112,19 +128,21 @@ export default function CategoriesScreen() {
                 accessibilityRole="button"
               >
                 <View style={styles.categoryHeaderLeft}>
-                  <View style={styles.categoryIconBox}>
-                    <Ionicons name={iconName as any} size={20} color="#FAFAFA" />
+                  <View style={[styles.categoryIconBox, { backgroundColor: accentColor + '20' }]}>
+                    <Ionicons name={iconName as any} size={20} color={accentColor} />
                   </View>
                   <View>
                     <Text style={styles.categoryName}>{cat.name}</Text>
                     <Text style={styles.categoryCount}>{cat.count} tools</Text>
                   </View>
                 </View>
-                <Ionicons
-                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                  size={20}
-                  color="#71717A"
-                />
+                <View style={[styles.chevronBox, isExpanded && styles.chevronBoxActive]}>
+                  <Ionicons
+                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                    size={16}
+                    color={liquidGlassTheme.text.tertiary}
+                  />
+                </View>
               </TouchableOpacity>
 
               {isExpanded && (
@@ -167,10 +185,10 @@ export default function CategoriesScreen() {
                           <Ionicons
                             name={favorites.includes(tool._id) ? 'heart' : 'heart-outline'}
                             size={18}
-                            color={favorites.includes(tool._id) ? '#EF4444' : '#71717A'}
+                            color={favorites.includes(tool._id) ? liquidGlassTheme.accent.error : liquidGlassTheme.text.tertiary}
                           />
                         </TouchableOpacity>
-                        <Ionicons name="chevron-forward" size={16} color="#71717A" />
+                        <Ionicons name="chevron-forward" size={16} color={liquidGlassTheme.text.tertiary} />
                       </View>
                     </TouchableOpacity>
                   ))}
@@ -187,7 +205,7 @@ export default function CategoriesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#09090B',
+    backgroundColor: liquidGlassTheme.background,
   },
   loadingContainer: {
     flex: 1,
@@ -198,35 +216,32 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#A1A1AA',
+    color: liquidGlassTheme.text.secondary,
     marginTop: 4,
   },
   categorySection: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-    backgroundColor: '#18181B',
-    borderWidth: 1,
-    borderColor: '#27272A',
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    ...glassUtils.card,
     overflow: 'hidden',
-  },
+  } as ViewStyle,
   categoryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing.lg,
   },
   categoryHeaderLeft: {
     flexDirection: 'row',
@@ -234,35 +249,45 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   categoryIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: '#27272A',
+    width: 42,
+    height: 42,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
   },
   categoryCount: {
     fontSize: 12,
-    color: '#71717A',
+    color: liquidGlassTheme.text.tertiary,
     marginTop: 2,
+  },
+  chevronBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  chevronBoxActive: {
+    backgroundColor: liquidGlassTheme.glass.backgroundLight,
   },
   toolsList: {
     borderTopWidth: 0.5,
-    borderTopColor: '#27272A',
+    borderTopColor: liquidGlassTheme.glass.border,
   },
   toolRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.lg,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#27272A',
+    borderBottomColor: liquidGlassTheme.glass.border,
   },
   toolRowLeft: {
     flexDirection: 'row',
@@ -293,11 +318,11 @@ const styles = StyleSheet.create({
   toolRowName: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
   },
   toolRowDesc: {
     fontSize: 12,
-    color: '#71717A',
+    color: liquidGlassTheme.text.tertiary,
     marginTop: 2,
   },
   toolRowRight: {

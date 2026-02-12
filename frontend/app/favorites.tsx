@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,20 +10,22 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Image } from 'expo-image';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
+import { liquidGlassTheme, spacing } from '../theme/liquidGlass';
+import { ToolListCard } from '../components/ui/tool-list-card';
+import { EmptyState } from '../components/ui/empty-state';
+import { ToolListCardSkeleton } from '../components/ui/tool-list-card-skeleton';
+import { Shimmer } from '../components/ui/shimmer';
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  
-  // Use Convex Query
+
   const allTools = useQuery(api.tools.get, {});
-  
+
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,15 +57,20 @@ export default function FavoritesScreen() {
     setTimeout(() => setRefreshing(false), 1000);
   }, [loadFavorites]);
 
-  // Filter tools based on favorites
   const favoriteTools = (allTools || []).filter((t: Tool) => favoriteIds.includes(t._id));
 
   if (allTools === undefined) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+        <View style={styles.header}>
+          <Shimmer width={140} height={32} style={{ borderRadius: 8, marginBottom: 8 }} />
+          <Shimmer width={100} height={14} style={{ borderRadius: 4 }} />
+        </View>
+        <View style={{}}>
+          {[1, 2, 3, 4].map(i => (
+            <ToolListCardSkeleton key={i} />
+          ))}
         </View>
       </SafeAreaView>
     );
@@ -78,7 +85,7 @@ export default function FavoritesScreen() {
         keyExtractor={item => item._id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={liquidGlassTheme.accent.primary} />
         }
         ListHeaderComponent={
           <View style={styles.header}>
@@ -89,65 +96,28 @@ export default function FavoritesScreen() {
           </View>
         }
         renderItem={({ item: tool }) => (
-          <TouchableOpacity
+          <ToolListCard
             testID={`fav-tool-${tool._id}`}
-            style={styles.toolCard}
+            name={tool.name}
+            description={tool.description}
+            category={tool.category}
+            iconUrl={tool.icon_url}
+            iconLetter={tool.icon_letter}
+            color={tool.color}
+            isFavorite={true}
             onPress={() => router.push(`/tool/${tool._id}`)}
-            activeOpacity={0.7}
-            accessibilityLabel={`Open ${tool.name}`}
-            accessibilityRole="button"
-          >
-            <View style={styles.cardLeft}>
-              <View style={[styles.iconBox, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
-                {tool.icon_url ? (
-                  <Image
-                    source={{ uri: tool.icon_url }}
-                    style={styles.toolIconImage}
-                    contentFit="contain"
-                  />
-                ) : (
-                  <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
-                )}
-              </View>
-              <View style={styles.cardInfo}>
-                <Text style={styles.toolName}>{tool.name}</Text>
-                <Text style={styles.toolDesc} numberOfLines={1}>{tool.description}</Text>
-                <View style={styles.categoryPill}>
-                  <Text style={styles.categoryPillText}>{tool.category}</Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              testID={`remove-fav-btn-${tool._id}`}
-              onPress={() => removeFavorite(tool._id)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.removeBtn}
-              accessibilityLabel={`Remove ${tool.name} from favorites`}
-              accessibilityRole="button"
-            >
-              <Ionicons name="heart" size={22} color="#EF4444" />
-            </TouchableOpacity>
-          </TouchableOpacity>
+            onToggleFavorite={() => removeFavorite(tool._id)}
+          />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconBox}>
-              <Ionicons name="heart-outline" size={48} color="#71717A" />
-            </View>
-            <Text style={styles.emptyTitle}>No favorites yet</Text>
-            <Text style={styles.emptySubtext}>
-              Tap the heart icon on any tool to save it here
-            </Text>
-            <TouchableOpacity
-              testID="go-home-btn"
-              style={styles.goHomeBtn}
-              onPress={() => router.push('/')}
-              accessibilityLabel="Browse tools"
-              accessibilityRole="button"
-            >
-              <Text style={styles.goHomeBtnText}>Browse Tools</Text>
-            </TouchableOpacity>
-          </View>
+          <EmptyState
+            icon="heart-outline"
+            title="No favorites yet"
+            subtitle="Tap the heart icon on any tool to save it here"
+            actionLabel="Browse Tools"
+            onAction={() => router.push('/')}
+            testID="go-home-btn"
+          />
         }
       />
     </SafeAreaView>
@@ -157,7 +127,7 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#09090B',
+    backgroundColor: liquidGlassTheme.background,
   },
   loadingContainer: {
     flex: 1,
@@ -168,121 +138,19 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#A1A1AA',
+    color: liquidGlassTheme.text.secondary,
     marginTop: 4,
-  },
-  toolCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#18181B',
-    borderRadius: 12,
-    padding: 14,
-    marginHorizontal: 16,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#27272A',
-  },
-  cardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
-  },
-  iconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  toolIconImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 10,
-  },
-  iconLetter: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  cardInfo: {
-    flex: 1,
-  },
-  toolName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#FAFAFA',
-  },
-  toolDesc: {
-    fontSize: 12,
-    color: '#A1A1AA',
-    marginTop: 2,
-  },
-  categoryPill: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#27272A',
-    borderRadius: 9999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginTop: 6,
-  },
-  categoryPillText: {
-    fontSize: 10,
-    color: '#A1A1AA',
-    fontWeight: '500',
-  },
-  removeBtn: {
-    padding: 8,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingTop: 64,
-    paddingHorizontal: 32,
-  },
-  emptyIconBox: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    backgroundColor: '#18181B',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#FAFAFA',
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#71717A',
-    marginTop: 8,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  goHomeBtn: {
-    marginTop: 24,
-    backgroundColor: '#FAFAFA',
-    borderRadius: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-  goHomeBtnText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#09090B',
   },
 });

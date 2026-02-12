@@ -5,11 +5,11 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  TextInput,
   ActivityIndicator,
   RefreshControl,
   StatusBar,
   Keyboard,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,55 +19,13 @@ import { Image } from 'expo-image';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
+import { liquidGlassTheme, glassUtils, spacing } from '../theme/liquidGlass';
+import { ToolGridCard } from '../components/ui/tool-grid-card';
+import { GlassSearchBar } from '../components/ui/glass-search-bar';
+import { EmptyState } from '../components/ui/empty-state';
+import { ToolGridCardSkeleton } from '../components/ui/tool-grid-card-skeleton';
 
-const ToolCard = React.memo(({ tool, isFavorite, onToggleFavorite, onPress }: {
-  tool: Tool;
-  isFavorite: boolean;
-  onToggleFavorite: (id: string) => void;
-  onPress: (id: string) => void;
-}) => (
-  <TouchableOpacity
-    testID={`tool-card-${tool._id}`}
-    style={styles.toolCard}
-    onPress={() => onPress(tool._id)}
-    activeOpacity={0.7}
-    accessibilityLabel={`Open ${tool.name}`}
-    accessibilityRole="button"
-  >
-    <View style={styles.cardHeader}>
-      <View style={[styles.iconBox, { backgroundColor: tool.icon_url ? 'transparent' : tool.color }]}>
-        {tool.icon_url ? (
-          <Image
-            source={{ uri: tool.icon_url }}
-            style={styles.toolIconImage}
-            contentFit="contain"
-            transition={200}
-          />
-        ) : (
-          <Text style={styles.iconLetter}>{tool.icon_letter}</Text>
-        )}
-      </View>
-      <TouchableOpacity
-        testID={`favorite-btn-${tool._id}`}
-        onPress={() => onToggleFavorite(tool._id)}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        accessibilityLabel={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
-        accessibilityRole="button"
-      >
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={20}
-          color={isFavorite ? '#EF4444' : '#71717A'}
-        />
-      </TouchableOpacity>
-    </View>
-    <Text style={styles.toolName} numberOfLines={1}>{tool.name}</Text>
-    <Text style={styles.toolDesc} numberOfLines={2}>{tool.description}</Text>
-    <View style={styles.categoryPill}>
-      <Text style={styles.categoryPillText}>{tool.category}</Text>
-    </View>
-  </TouchableOpacity>
-));
+const { width } = Dimensions.get('window');
 
 const CATEGORIES = ['All', 'Editors & IDEs', 'Web & App Builders', 'Assistants & Agents', 'Design & UI'];
 
@@ -76,13 +34,12 @@ export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [favorites, setFavorites] = useState<string[]>([]);
-  
-  // Use Convex Query
-  const tools = useQuery(api.tools.get, { 
+
+  const tools = useQuery(api.tools.get, {
     search: search.trim() || undefined,
-    category: activeCategory === 'All' ? undefined : activeCategory
+    category: activeCategory === 'All' ? undefined : activeCategory,
   });
-  
+
   const [refreshing, setRefreshing] = useState(false);
 
   const loadFavorites = useCallback(async () => {
@@ -110,7 +67,6 @@ export default function HomeScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // Convex automatically updates, but we can re-fetch favorites
     loadFavorites();
     setTimeout(() => setRefreshing(false), 1000);
   }, [loadFavorites]);
@@ -118,11 +74,17 @@ export default function HomeScreen() {
   const featuredTools = tools ? tools.filter((t: Tool) => t.featured) : [];
 
   const renderToolCard = useCallback(({ item }: { item: Tool }) => (
-    <ToolCard
-      tool={item}
+    <ToolGridCard
+      testID={`tool-card-${item._id}`}
+      name={item.name}
+      description={item.description}
+      category={item.category}
+      iconUrl={item.icon_url}
+      iconLetter={item.icon_letter}
+      color={item.color}
       isFavorite={favorites.includes(item._id)}
-      onToggleFavorite={toggleFavorite}
-      onPress={(id) => router.push(`/tool/${id}`)}
+      onPress={() => router.push(`/tool/${item._id}`)}
+      onToggleFavorite={() => toggleFavorite(item._id)}
     />
   ), [favorites, toggleFavorite, router]);
 
@@ -130,8 +92,19 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+        <View style={styles.header}>
+          <View style={{ height: 32, width: 150, borderRadius: 8, backgroundColor: liquidGlassTheme.surface, marginBottom: 8 }} />
+          <View style={{ height: 16, width: 220, borderRadius: 4, backgroundColor: liquidGlassTheme.surface }} />
+        </View>
+        <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+            <ToolGridCardSkeleton />
+            <ToolGridCardSkeleton />
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <ToolGridCardSkeleton />
+            <ToolGridCardSkeleton />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -149,7 +122,7 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={liquidGlassTheme.accent.primary} />
         }
         ListHeaderComponent={
           <View>
@@ -160,30 +133,12 @@ export default function HomeScreen() {
             </View>
 
             {/* Search */}
-            <View style={styles.searchContainer}>
-              <Ionicons name="search" size={18} color="#71717A" style={styles.searchIcon} />
-              <TextInput
-                testID="search-input"
-                style={styles.searchInput}
-                placeholder="Search tools..."
-                placeholderTextColor="#71717A"
-                value={search}
-                onChangeText={setSearch}
-                returnKeyType="search"
-                onSubmitEditing={Keyboard.dismiss}
-              />
-              {search.length > 0 && (
-                <TouchableOpacity
-                  testID="search-clear-btn"
-                  onPress={() => setSearch('')}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  accessibilityLabel="Clear search"
-                  accessibilityRole="button"
-                >
-                  <Ionicons name="close-circle" size={18} color="#71717A" />
-                </TouchableOpacity>
-              )}
-            </View>
+            <GlassSearchBar
+              testID="search-input"
+              value={search}
+              onChangeText={setSearch}
+              onSubmit={Keyboard.dismiss}
+            />
 
             {/* Category Tabs */}
             <FlatList
@@ -215,9 +170,9 @@ export default function HomeScreen() {
             />
 
             {/* Featured Section */}
-            {activeCategory === 'All' && !search && (
+            {activeCategory === 'All' && !search && featuredTools.length > 0 && (
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}>Featured</Text>
+                <Text style={styles.sectionTitle}>⭐ Featured</Text>
                 <FlatList
                   testID="featured-tools"
                   horizontal
@@ -238,7 +193,7 @@ export default function HomeScreen() {
                         {item.icon_url ? (
                           <Image
                             source={{ uri: item.icon_url }}
-                            style={styles.toolIconImage}
+                            style={styles.featuredIconImage}
                             contentFit="contain"
                           />
                         ) : (
@@ -263,11 +218,11 @@ export default function HomeScreen() {
           </View>
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="search-outline" size={48} color="#71717A" />
-            <Text style={styles.emptyText}>No tools found</Text>
-            <Text style={styles.emptySubtext}>Try adjusting your search or filter</Text>
-          </View>
+          <EmptyState
+            icon="search-outline"
+            title="No tools found"
+            subtitle="Try adjusting your search or filter"
+          />
         }
       />
     </SafeAreaView>
@@ -277,209 +232,127 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#09090B',
+    backgroundColor: liquidGlassTheme.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  listContent: {
-    paddingBottom: 100,
-  },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.sm,
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: Math.min(32, width * 0.08),
     fontWeight: '700',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#A1A1AA',
+    fontSize: Math.min(14, width * 0.035),
+    color: liquidGlassTheme.text.secondary,
     marginTop: 4,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#27272A',
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 12,
-    paddingHorizontal: 12,
-    height: 44,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    color: '#FAFAFA',
-    fontSize: 16,
-    height: 44,
-  },
   categoryList: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    gap: 8,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.lg,
+    gap: spacing.sm,
   },
   categoryTab: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 9999,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#27272A',
+    borderColor: liquidGlassTheme.glass.border,
     backgroundColor: 'transparent',
   },
   categoryTabActive: {
-    backgroundColor: '#FAFAFA',
-    borderColor: '#FAFAFA',
+    backgroundColor: liquidGlassTheme.accent.primary,
+    borderColor: liquidGlassTheme.accent.primary,
   },
   categoryTabText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#A1A1AA',
+    color: liquidGlassTheme.text.secondary,
   },
   categoryTabTextActive: {
-    color: '#09090B',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   sectionContainer: {
-    marginBottom: 8,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: Math.min(18, width * 0.05),
     fontWeight: '600',
-    color: '#FAFAFA',
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    color: liquidGlassTheme.text.primary,
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
   },
   toolCount: {
-    fontSize: 14,
-    color: '#71717A',
+    fontSize: Math.min(14, width * 0.035),
+    color: liquidGlassTheme.text.tertiary,
     fontWeight: '500',
   },
   featuredList: {
-    paddingHorizontal: 16,
-    gap: 12,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.md,
   },
   featuredCard: {
     width: 180,
-    backgroundColor: '#18181B',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: liquidGlassTheme.surface,
+    borderRadius: liquidGlassTheme.glass.borderRadius,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: '#27272A',
+    borderColor: liquidGlassTheme.glass.border,
+    shadowColor: liquidGlassTheme.glass.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
   },
   featuredIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.md,
+  },
+  featuredIconImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
   },
   featuredIconLetter: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
     color: '#FFFFFF',
   },
   featuredName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FAFAFA',
+    color: liquidGlassTheme.text.primary,
     marginBottom: 4,
   },
   featuredDesc: {
     fontSize: 12,
-    color: '#A1A1AA',
+    color: liquidGlassTheme.text.secondary,
     lineHeight: 16,
   },
   row: {
-    paddingHorizontal: 16,
-    gap: 12,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.md,
   },
-  toolCard: {
-    flex: 1,
-    backgroundColor: '#18181B',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#27272A',
+  listContent: {
+    paddingBottom: 100,
   },
-  cardHeader: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    justifyContent: 'center',
     alignItems: 'center',
-  },
-  toolIconImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  iconLetter: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  toolName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FAFAFA',
-    marginBottom: 4,
-  },
-  toolDesc: {
-    fontSize: 12,
-    color: '#A1A1AA',
-    lineHeight: 16,
-    marginBottom: 10,
-  },
-  categoryPill: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#27272A',
-    borderRadius: 9999,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  categoryPillText: {
-    fontSize: 10,
-    color: '#A1A1AA',
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingTop: 48,
-    paddingHorizontal: 32,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FAFAFA',
-    marginTop: 16,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#71717A',
-    marginTop: 4,
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
   },
 });
