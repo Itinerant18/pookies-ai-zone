@@ -7,8 +7,9 @@ import {
     ViewStyle,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
-import { liquidGlassTheme, glassUtils, spacing } from '../../theme/liquidGlass';
+import { FontAwesome } from '@expo/vector-icons';
+import { ToolIcon } from './tool-icon';
+import { clayTheme, clayUtils, spacing } from '../../theme/clay';
 import { AnimatedPress } from './animated-press';
 
 interface ToolListCardProps {
@@ -19,8 +20,10 @@ interface ToolListCardProps {
     iconLetter: string;
     color: string;
     isFavorite?: boolean;
+    isComparing?: boolean;
     onPress: () => void;
     onToggleFavorite?: () => void;
+    onToggleCompare?: () => void;
     testID?: string;
 }
 
@@ -32,30 +35,29 @@ export function ToolListCard({
     iconLetter,
     color,
     isFavorite,
+    isComparing,
     onPress,
     onToggleFavorite,
+    onToggleCompare,
     testID,
 }: ToolListCardProps) {
     return (
         <AnimatedPress
             testID={testID}
-            style={styles.card}
+            style={[styles.card, isComparing ? styles.cardComparing : {}]}
             onPress={onPress}
             accessibilityLabel={`Open ${name}`}
             accessibilityRole="button"
         >
             <View style={styles.left}>
-                <View style={[styles.iconBox, { backgroundColor: iconUrl ? 'transparent' : color }]}>
-                    {iconUrl ? (
-                        <Image
-                            source={{ uri: iconUrl }}
-                            style={styles.iconImage}
-                            contentFit="contain"
-                        />
-                    ) : (
-                        <Text style={styles.iconLetter}>{iconLetter}</Text>
-                    )}
-                </View>
+                <ToolIcon
+                    url={iconUrl}
+                    letter={iconLetter}
+                    color={color}
+                    size={44}
+                    borderRadius={12}
+                    fontSize={18}
+                />
                 <View style={styles.info}>
                     <Text style={styles.name} numberOfLines={1}>{name}</Text>
                     <Text style={styles.desc} numberOfLines={1}>{description}</Text>
@@ -65,21 +67,34 @@ export function ToolListCard({
                 </View>
             </View>
             <View style={styles.right}>
+                {onToggleCompare && (
+                    <TouchableOpacity
+                        onPress={onToggleCompare}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        style={styles.actionBtn}
+                    >
+                        <FontAwesome
+                            name={isComparing ? 'bar-chart' : 'bar-chart-o'}
+                            size={16}
+                            color={isComparing ? clayTheme.accent.primary : clayTheme.text.tertiary}
+                        />
+                    </TouchableOpacity>
+                )}
                 {onToggleFavorite && (
                     <TouchableOpacity
                         onPress={onToggleFavorite}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        style={styles.favBtn}
+                        style={styles.actionBtn}
                         accessibilityLabel={isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
                     >
-                        <Ionicons
-                            name={isFavorite ? 'heart' : 'heart-outline'}
-                            size={20}
-                            color={isFavorite ? liquidGlassTheme.accent.error : liquidGlassTheme.text.tertiary}
+                        <FontAwesome
+                            name={isFavorite ? 'heart' : 'heart-o'}
+                            size={18}
+                            color={isFavorite ? clayTheme.accent.error : clayTheme.text.tertiary}
                         />
                     </TouchableOpacity>
                 )}
-                <Ionicons name="chevron-forward" size={16} color={liquidGlassTheme.text.tertiary} />
+                <FontAwesome name="chevron-right" size={14} color={clayTheme.text.tertiary} />
             </View>
         </AnimatedPress>
     );
@@ -90,11 +105,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        ...glassUtils.card,
+        ...clayUtils.card,
         padding: 14,
         marginHorizontal: spacing.lg,
         marginBottom: 10,
     } as ViewStyle,
+    cardComparing: {
+        borderColor: clayTheme.accent.primary,
+        borderWidth: 1,
+    },
     left: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -124,29 +143,29 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 15,
         fontWeight: '600',
-        color: liquidGlassTheme.text.primary,
+        color: clayTheme.text.primary,
     },
     desc: {
         fontSize: 12,
-        color: liquidGlassTheme.text.secondary,
+        color: clayTheme.text.secondary,
         marginTop: 2,
     },
     pill: {
-        ...glassUtils.pill,
+        ...clayUtils.pill,
         alignSelf: 'flex-start',
         marginTop: 6,
     } as ViewStyle,
     pillText: {
         fontSize: 10,
-        color: liquidGlassTheme.text.secondary,
+        color: clayTheme.text.secondary,
         fontWeight: '500',
     },
     right: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 8,
     },
-    favBtn: {
+    actionBtn: {
         padding: 4,
     },
 });

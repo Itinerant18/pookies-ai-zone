@@ -1,101 +1,75 @@
-import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { Text, TouchableOpacity, View, useColorScheme } from "react-native";
-
-// Base Metal Button Styles
-const buttonVariants = cva(
-  "base",
-  {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    shadowColor: "rgba(0, 0, 0, 0.1)",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  {
-    variants: {
-      variant: {
-        primary: {
-          backgroundColor: "#6366F1",
-          borderColor: "#6366F1",
-        },
-        secondary: {
-          backgroundColor: "#8B5CF6",
-          borderColor: "#8B5CF6",
-        },
-        ghost: {
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          borderColor: "rgba(255, 255, 255, 0.2)",
-        },
-      },
-      size: {
-        sm: {
-          paddingVertical: 6,
-          paddingHorizontal: 12,
-          fontSize: 14,
-        },
-        md: {
-          paddingVertical: 8,
-          paddingHorizontal: 16,
-          fontSize: 16,
-        },
-        lg: {
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          fontSize: 18,
-        },
-      },
-    },
-  }
-);
+import { Text, TouchableOpacity, View, useColorScheme, StyleSheet, ViewStyle, TextStyle } from "react-native";
+import { clayTheme } from "../../theme/clay";
 
 export interface MetalButtonProps extends React.ComponentProps<typeof TouchableOpacity> {
-  variant?: VariantProps<typeof buttonVariants>["variant"];
-  size?: VariantProps<typeof buttonVariants>["size"];
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   onPress?: () => void;
   children: React.ReactNode;
 }
 
-const MetalButton = React.forwardRef<TouchableOpacity, MetalButtonProps>(
-  ({ className, variant = "primary", size = "md", disabled, onPress, children, style, ...props }, ref) => {
+import { TouchableOpacity as RNTouchableOpacity } from "react-native";
+
+const MetalButton = React.forwardRef<any, MetalButtonProps>(
+  ({ variant = "primary", size = "md", disabled, onPress, children, style, ...props }, ref) => {
     const colorScheme = useColorScheme();
+
+    const getButtonStyle = (): ViewStyle => {
+      let baseStyle: ViewStyle = {
+        borderRadius: 12,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      };
+
+      // Variant
+      if (variant === 'primary') {
+        baseStyle.backgroundColor = clayTheme.accent.primary;
+        baseStyle.borderColor = clayTheme.accent.primary;
+      } else if (variant === 'secondary') {
+        baseStyle.backgroundColor = clayTheme.accent.secondary;
+        baseStyle.borderColor = clayTheme.accent.secondary;
+      } else {
+        baseStyle.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+        baseStyle.borderColor = 'rgba(0, 0, 0, 0.1)';
+      }
+
+      // Size
+      if (size === 'sm') {
+        baseStyle.paddingVertical = 6;
+        baseStyle.paddingHorizontal = 12;
+      } else if (size === 'lg') {
+        baseStyle.paddingVertical = 12;
+        baseStyle.paddingHorizontal = 20;
+      } else {
+        baseStyle.paddingVertical = 8;
+        baseStyle.paddingHorizontal = 16;
+      }
+
+      return baseStyle;
+    };
+
+    const getTextStyle = (): TextStyle => {
+      return {
+        color: variant === 'ghost' ? clayTheme.text.primary : '#FFFFFF',
+        fontSize: size === 'sm' ? 14 : size === 'lg' ? 18 : 16,
+        fontWeight: '600',
+        textAlign: 'center',
+      };
+    };
 
     return (
       <TouchableOpacity
         ref={ref}
-        className={buttonVariants({ variant, size, className })}
         onPress={onPress}
         disabled={disabled}
-        activeOpacity={disabled ? 0.7 : 1}
-        style={[
-          style,
-          {
-            // Glass effect for active state
-            ...(variant === 'ghost' && {
-              backgroundColor: colorScheme === 'dark'
-                ? 'rgba(255, 255, 255, 0.1)'
-                : 'rgba(0, 0, 0, 0.1)',
-            })
-          }
-        ]}
+        activeOpacity={disabled ? 0.7 : 0.8}
+        style={[getButtonStyle(), style]}
         {...props}
       >
-        <Text
-          className={`text-${variant}-${size}`}
-          style={{
-            color: variant === 'ghost'
-              ? (colorScheme === 'dark' ? '#1A1A1A' : '#1A1A1A')
-              : '#FFFFFF',
-            fontWeight: '600',
-            textAlign: 'center',
-          }}
-        >
+        <Text style={getTextStyle()}>
           {children}
         </Text>
       </TouchableOpacity>
@@ -105,4 +79,4 @@ const MetalButton = React.forwardRef<TouchableOpacity, MetalButtonProps>(
 
 MetalButton.displayName = "MetalButton";
 
-export { MetalButton, buttonVariants };
+export { MetalButton };

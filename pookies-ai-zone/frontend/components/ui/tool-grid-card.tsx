@@ -7,8 +7,9 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
-import { liquidGlassTheme, glassUtils, spacing } from '../../theme/liquidGlass';
+import { FontAwesome } from '@expo/vector-icons';
+import { ToolIcon } from './tool-icon';
+import { clayTheme, clayUtils, spacing } from '../../theme/clay';
 import { AnimatedPress } from './animated-press';
 
 interface ToolGridCardProps {
@@ -43,24 +44,20 @@ export function ToolGridCard({
     return (
         <AnimatedPress
             testID={testID}
-            style={[styles.card, isComparing && styles.cardComparing]}
+            style={[styles.card, isComparing ? styles.cardComparing : {}]}
             onPress={onPress}
             accessibilityLabel={`Open ${name} `}
             accessibilityRole="button"
         >
             <View style={styles.cardHeader}>
-                <View style={[styles.iconBox, { backgroundColor: iconUrl ? 'transparent' : color }]}>
-                    {iconUrl ? (
-                        <Image
-                            source={{ uri: iconUrl }}
-                            style={styles.iconImage}
-                            contentFit="contain"
-                            transition={200}
-                        />
-                    ) : (
-                        <Text style={styles.iconLetter}>{iconLetter}</Text>
-                    )}
-                </View>
+                <ToolIcon
+                    url={iconUrl}
+                    letter={iconLetter}
+                    color={color}
+                    size={36}
+                    borderRadius={10}
+                    fontSize={16}
+                />
                 <View style={styles.headerActions}>
                     <TouchableOpacity
                         onPress={onToggleCompare}
@@ -68,10 +65,10 @@ export function ToolGridCard({
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         accessibilityLabel={isComparing ? `Remove ${name} from comparison` : `Add ${name} to comparison`}
                     >
-                        <Ionicons
-                            name={isComparing ? 'stats-chart' : 'stats-chart-outline'}
-                            size={18}
-                            color={isComparing ? liquidGlassTheme.accent.primary : liquidGlassTheme.text.tertiary}
+                        <FontAwesome
+                            name={isComparing ? 'bar-chart' : 'bar-chart-o'}
+                            size={16}
+                            color={isComparing ? clayTheme.accent.primary : clayTheme.text.tertiary}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -80,10 +77,10 @@ export function ToolGridCard({
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         accessibilityLabel={isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
                     >
-                        <Ionicons
-                            name={isFavorite ? 'heart' : 'heart-outline'}
+                        <FontAwesome
+                            name={isFavorite ? 'heart' : 'heart-o'}
                             size={18}
-                            color={isFavorite ? liquidGlassTheme.accent.error : liquidGlassTheme.text.tertiary}
+                            color={isFavorite ? clayTheme.accent.error : clayTheme.text.tertiary}
                         />
                     </TouchableOpacity>
                 </View>
@@ -100,12 +97,12 @@ export function ToolGridCard({
 const styles = StyleSheet.create({
     card: {
         flex: 1,
-        ...glassUtils.card,
+        ...clayUtils.card,
         padding: 14,
         marginBottom: spacing.md,
     } as ViewStyle,
     cardComparing: {
-        borderColor: liquidGlassTheme.accent.primary,
+        borderColor: clayTheme.accent.primary,
         borderWidth: 1.5,
     },
     cardHeader: {
@@ -136,27 +133,27 @@ const styles = StyleSheet.create({
     iconLetter: {
         fontSize: 16,
         fontWeight: '700',
-        color: liquidGlassTheme.text.primary,
+        color: clayTheme.text.primary,
     },
     name: {
         fontSize: 14,
         fontWeight: '600',
-        color: liquidGlassTheme.text.primary,
+        color: clayTheme.text.primary,
         marginBottom: 4,
     },
     desc: {
         fontSize: 12,
-        color: liquidGlassTheme.text.secondary,
+        color: clayTheme.text.secondary,
         lineHeight: 16,
         marginBottom: 10,
     },
     pill: {
-        ...glassUtils.pill,
+        ...clayUtils.pill,
         alignSelf: 'flex-start',
     } as ViewStyle,
     pillText: {
         fontSize: 10,
-        color: liquidGlassTheme.text.secondary,
+        color: clayTheme.text.secondary,
         fontWeight: '500',
     },
 });

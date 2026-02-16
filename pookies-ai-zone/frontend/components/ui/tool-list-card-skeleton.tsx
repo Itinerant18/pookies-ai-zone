@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Shimmer } from './shimmer';
-import { glassUtils, spacing } from '../../theme/liquidGlass';
+import { clayUtils, spacing } from '../../theme/clay';
 
 export function ToolListCardSkeleton() {
     return (
@@ -20,7 +20,7 @@ export function ToolListCardSkeleton() {
 
 const styles = StyleSheet.create({
     card: {
-        ...glassUtils.card,
+        ...clayUtils.card,
         padding: 14,
         marginHorizontal: spacing.lg,
         marginBottom: 10,

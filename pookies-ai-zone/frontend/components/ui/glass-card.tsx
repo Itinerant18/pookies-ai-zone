@@ -1,8 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { liquidGlassTheme } from '../../theme/liquidGlass';
 
-const GlassCard = React.memo(({ children, style }) => (
+interface GlassCardProps {
+  children: React.ReactNode;
+  style?: ViewStyle;
+}
+
+const GlassCard = React.memo(({ children, style }: GlassCardProps) => (
   <View
     style={[
       {

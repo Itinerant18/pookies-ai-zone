@@ -40,6 +40,22 @@ export const getById = query({
   },
 });
 
+export const getByIds = query({
+  args: { ids: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    const results = [];
+    for (const id of args.ids) {
+      try {
+        const doc = await ctx.db.get(id as any);
+        if (doc) results.push(doc);
+      } catch (e) {
+        // skip invalid ids
+      }
+    }
+    return results;
+  },
+});
+
 export const getCategories = query({
   args: {},
   handler: async (ctx) => {
@@ -69,6 +85,12 @@ const insertTool = async (ctx: any, toolData: any) => {
     icon_url: toolData.icon_url || generatedIconUrl,
     color: toolData.color,
     featured: toolData.featured || false,
+    pricing: toolData.pricing,
+    platforms: toolData.platforms,
+    features: toolData.features,
+    pros: toolData.pros,
+    cons: toolData.cons,
+    updated_at: toolData.updated_at,
   });
 };
 

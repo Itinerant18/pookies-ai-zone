@@ -1,8 +1,17 @@
 import React from 'react';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, ViewStyle } from 'react-native';
 import { liquidGlassTheme } from '../../theme/liquidGlass';
 
-const GlassButton = ({ children, onPress, style, variant = 'ghost', size = 'md', disabled = false }) => (
+interface GlassButtonProps {
+  children: React.ReactNode;
+  onPress: () => void;
+  style?: ViewStyle;
+  variant?: 'ghost' | 'filled';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+}
+
+const GlassButton = ({ children, onPress, style, variant = 'ghost', size = 'md', disabled = false }: GlassButtonProps) => (
   <TouchableOpacity
     onPress={onPress}
     disabled={disabled}

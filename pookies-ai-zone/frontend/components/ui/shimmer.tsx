@@ -8,7 +8,7 @@ import Animated, {
     Easing
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { liquidGlassTheme } from '../../theme/liquidGlass';
+import { clayTheme } from '../../theme/clay';
 
 interface ShimmerProps {
     width: DimensionValue;
@@ -39,7 +39,7 @@ export function Shimmer({ width, height, style }: ShimmerProps) {
                 width,
                 height,
                 overflow: 'hidden',
-                backgroundColor: liquidGlassTheme.surface,
+                backgroundColor: clayTheme.surface,
                 borderRadius: 12
             },
             style
@@ -47,7 +47,7 @@ export function Shimmer({ width, height, style }: ShimmerProps) {
             <AnimatedGradient
                 colors={[
                     'transparent',
-                    'rgba(255,255,255,0.05)',
+                    'rgba(0,0,0,0.05)',
                     'transparent'
                 ]}
                 start={{ x: 0, y: 0.5 }}

@@ -15,11 +15,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
-import { liquidGlassTheme, spacing } from '../theme/liquidGlass';
+import { clayTheme, spacing } from '../theme/clay';
 import { ToolListCard } from '../components/ui/tool-list-card';
 import { EmptyState } from '../components/ui/empty-state';
 import { ToolListCardSkeleton } from '../components/ui/tool-list-card-skeleton';
 import { Shimmer } from '../components/ui/shimmer';
+import { ComparisonBar } from '../components/ui/comparison-bar';
 
 export default function FavoritesScreen() {
   const router = useRouter();
@@ -27,22 +28,25 @@ export default function FavoritesScreen() {
   const allTools = useQuery(api.tools.get, {});
 
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [comparing, setComparing] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadFavorites = useCallback(async () => {
+  const loadStorage = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem('favorites');
-      const ids: string[] = stored ? JSON.parse(stored) : [];
-      setFavoriteIds(ids);
+      const storedFavs = await AsyncStorage.getItem('favorites');
+      if (storedFavs) setFavoriteIds(JSON.parse(storedFavs));
+
+      const storedComp = await AsyncStorage.getItem('comparing');
+      if (storedComp) setComparing(JSON.parse(storedComp));
     } catch (err) {
-      console.error('Failed to load favorites:', err);
+      console.error('Failed to load storage:', err);
     }
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      loadFavorites();
-    }, [loadFavorites])
+      loadStorage();
+    }, [loadStorage])
   );
 
   const removeFavorite = useCallback(async (toolId: string) => {
@@ -51,18 +55,33 @@ export default function FavoritesScreen() {
     await AsyncStorage.setItem('favorites', JSON.stringify(newIds));
   }, [favoriteIds]);
 
+  const toggleCompare = useCallback(async (toolId: string) => {
+    setComparing(prev => {
+      if (prev.includes(toolId)) {
+        const next = prev.filter(id => id !== toolId);
+        AsyncStorage.setItem('comparing', JSON.stringify(next));
+        return next;
+      } else {
+        if (prev.length >= 4) return prev;
+        const next = [...prev, toolId];
+        AsyncStorage.setItem('comparing', JSON.stringify(next));
+        return next;
+      }
+    });
+  }, []);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadFavorites();
+    loadStorage();
     setTimeout(() => setRefreshing(false), 1000);
-  }, [loadFavorites]);
+  }, [loadStorage]);
 
   const favoriteTools = (allTools || []).filter((t: Tool) => favoriteIds.includes(t._id));
 
   if (allTools === undefined) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
         <View style={styles.header}>
           <Shimmer width={140} height={32} style={{ borderRadius: 8, marginBottom: 8 }} />
           <Shimmer width={100} height={14} style={{ borderRadius: 4 }} />
@@ -78,14 +97,14 @@ export default function FavoritesScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <FlatList
         testID="favorites-list"
         data={favoriteTools}
         keyExtractor={item => item._id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={liquidGlassTheme.accent.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={clayTheme.accent.primary} />
         }
         ListHeaderComponent={
           <View style={styles.header}>
@@ -105,13 +124,15 @@ export default function FavoritesScreen() {
             iconLetter={tool.icon_letter}
             color={tool.color}
             isFavorite={true}
+            isComparing={comparing.includes(tool._id)}
             onPress={() => router.push(`/tool/${tool._id}`)}
             onToggleFavorite={() => removeFavorite(tool._id)}
+            onToggleCompare={() => toggleCompare(tool._id)}
           />
         )}
         ListEmptyComponent={
           <EmptyState
-            icon="heart-outline"
+            icon="heart-o"
             title="No favorites yet"
             subtitle="Tap the heart icon on any tool to save it here"
             actionLabel="Browse Tools"
@@ -120,6 +141,18 @@ export default function FavoritesScreen() {
           />
         }
       />
+      <ComparisonBar
+        count={comparing.length}
+        onClear={() => {
+          setComparing([]);
+          AsyncStorage.setItem('comparing', JSON.stringify([]));
+        }}
+        onCompare={() => {
+          if (comparing.length > 1) {
+            router.push({ pathname: '/compare', params: { ids: comparing.join(',') } });
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -127,7 +160,7 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: liquidGlassTheme.background,
+    backgroundColor: clayTheme.background,
   },
   loadingContainer: {
     flex: 1,
@@ -145,12 +178,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: liquidGlassTheme.text.primary,
+    color: clayTheme.text.primary,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: liquidGlassTheme.text.secondary,
+    color: clayTheme.text.secondary,
     marginTop: 4,
   },
 });

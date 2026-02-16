@@ -1,26 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { liquidGlassTheme, glassUtils, spacing } from '../../theme/liquidGlass';
-import { Ionicons } from '@expo/vector-icons';
+import { clayTheme, clayUtils, spacing } from '../../theme/clay';
+import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function ClayTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     const insets = useSafeAreaInsets();
-
-    // Hide tab bar on specific routes if needed, though usually handled by options
-    // const focusedOptions = descriptors[state.routes[state.index].key].options;
-    // if (focusedOptions.tabBarVisible === false) return null;
 
     return (
         <View style={[styles.container, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
-            <View style={styles.glass}>
+            <View style={styles.clayBar}>
                 {state.routes.map((route, index) => {
                     const options = descriptors[route.key].options as any;
-
-                    // Skip hidden routes (like tool/[id] which has href: null)
-                    // Expo router often handles this by not including them in state.routes for tabs if properly configured with href: null
-                    // But here we might see them.
                     if (options.href === null) return null;
 
                     const isFocused = state.index === index;
@@ -38,10 +30,14 @@ export function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProp
                         }
                     };
 
-                    const iconName = route.name === 'index' ? 'grid'
-                        : route.name === 'categories' ? 'layers'
-                            : route.name === 'favorites' ? 'heart'
-                                : 'ellipse'; // Fallback
+                    const getIconName = () => {
+                        if (route.name === 'index') return 'th-large';
+                        if (route.name === 'categories') return 'list-ul';
+                        if (route.name === 'favorites') return isFocused ? 'heart' : 'heart-o';
+                        return 'circle';
+                    };
+
+                    const iconName = getIconName();
 
                     return (
                         <TouchableOpacity
@@ -51,14 +47,17 @@ export function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProp
                             accessibilityLabel={options.tabBarAccessibilityLabel}
                             testID={options.tabBarTestID}
                             onPress={onPress}
-                            style={styles.tab}
-                            activeOpacity={0.7}
+                            style={[
+                                styles.tab,
+                                isFocused && styles.tabFocused
+                            ]}
+                            activeOpacity={0.8}
                         >
                             <View style={[styles.iconContainer, isFocused && styles.focusedIcon]}>
-                                <Ionicons
-                                    name={isFocused ? iconName as any : `${iconName}-outline` as any}
-                                    size={20} // Slightly smaller for refinement
-                                    color={isFocused ? '#FFFFFF' : liquidGlassTheme.text.tertiary}
+                                <FontAwesome
+                                    name={iconName as any}
+                                    size={20}
+                                    color={isFocused ? '#FFFFFF' : clayTheme.text.tertiary}
                                 />
                             </View>
                             {isFocused && (
@@ -81,42 +80,50 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'transparent',
     },
-    glass: {
+    clayBar: {
         flexDirection: 'row',
-        backgroundColor: liquidGlassTheme.glass.background,
-        borderColor: liquidGlassTheme.glass.border,
+        backgroundColor: clayTheme.surface,
+        borderRadius: 40,
+        padding: 8,
+        // Clay shadow effect
+        shadowColor: clayTheme.clay.shadowDark,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.2,
+        shadowRadius: 20,
+        elevation: 10,
+        gap: 8,
         borderWidth: 1,
-        borderRadius: 32,
-        padding: 6,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        elevation: 8,
-        gap: 4,
+        borderColor: '#FFFFFF', // Inner highlight
     },
     tab: {
         paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 24,
+        paddingVertical: 12,
+        borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
     },
+    tabFocused: {
+        backgroundColor: clayTheme.accent.primary,
+        shadowColor: clayTheme.accent.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
     iconContainer: {
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 16,
     },
     focusedIcon: {
-        backgroundColor: liquidGlassTheme.accent.primary,
+        // Icon container styles if needed
     },
     label: {
         color: '#FFFFFF',
-        fontSize: 12,
-        fontWeight: '600',
-        marginLeft: 2,
+        fontSize: 13,
+        fontWeight: '700',
+        marginLeft: 4,
     }
 });

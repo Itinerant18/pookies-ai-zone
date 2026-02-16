@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { liquidGlassTheme, spacing } from '../../theme/liquidGlass';
+import { FontAwesome } from '@expo/vector-icons';
+import { clayTheme, spacing } from '../../theme/clay';
 
 interface EmptyStateProps {
-    icon: keyof typeof Ionicons.glyphMap;
+    icon: keyof typeof FontAwesome.glyphMap;
     title: string;
     subtitle: string;
     actionLabel?: string;
@@ -23,7 +23,7 @@ export function EmptyState({
     return (
         <View style={styles.container}>
             <View style={styles.iconBox}>
-                <Ionicons name={icon} size={48} color={liquidGlassTheme.text.tertiary} />
+                <FontAwesome name={icon} size={48} color={clayTheme.text.tertiary} />
             </View>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.subtitle}>{subtitle}</Text>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 20,
-        backgroundColor: liquidGlassTheme.surface,
+        backgroundColor: clayTheme.surface,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
@@ -61,18 +61,18 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '600',
-        color: liquidGlassTheme.text.primary,
+        color: clayTheme.text.primary,
     },
     subtitle: {
         fontSize: 14,
-        color: liquidGlassTheme.text.tertiary,
+        color: clayTheme.text.tertiary,
         marginTop: spacing.sm,
         textAlign: 'center',
         lineHeight: 20,
     },
     button: {
         marginTop: spacing.xl,
-        backgroundColor: liquidGlassTheme.accent.primary,
+        backgroundColor: clayTheme.accent.primary,
         borderRadius: 14,
         paddingHorizontal: 28,
         paddingVertical: 14,

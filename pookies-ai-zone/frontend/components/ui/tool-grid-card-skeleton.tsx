@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Shimmer } from './shimmer';
-import { glassUtils, spacing } from '../../theme/liquidGlass';
+import { clayUtils, spacing } from '../../theme/clay';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - (spacing.xl * 2) - spacing.md) / 2;
@@ -23,7 +23,7 @@ export function ToolGridCardSkeleton() {
 const styles = StyleSheet.create({
     card: {
         width: CARD_WIDTH,
-        ...glassUtils.card,
+        ...clayUtils.card,
         padding: 14,
         marginBottom: spacing.md,
     },

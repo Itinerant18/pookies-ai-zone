@@ -12,22 +12,23 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
-import { liquidGlassTheme, glassUtils, spacing } from '../theme/liquidGlass';
+import { ToolIcon } from '../components/ui/tool-icon';
+import { clayTheme, clayUtils, spacing, typography } from '../theme/clay';
 import { ToolGridCard } from '../components/ui/tool-grid-card';
-import { GlassSearchBar } from '../components/ui/glass-search-bar';
+import { ClaySearchBar } from '../components/ui/clay-search-bar';
 import { EmptyState } from '../components/ui/empty-state';
 import { ToolGridCardSkeleton } from '../components/ui/tool-grid-card-skeleton';
+import { ComparisonBar } from '../components/ui/comparison-bar';
+import { AnimatedPress } from '../components/ui/animated-press';
+import { ToolDetailSheet } from '../components/tool/tool-detail-sheet';
 
 const { width } = Dimensions.get('window');
-
-const CATEGORIES = ['All', 'Editors & IDEs', 'Web & App Builders', 'Assistants & Agents', 'Design & UI'];
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -35,11 +36,26 @@ export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [comparing, setComparing] = useState<string[]>([]);
+  const { toolId } = useLocalSearchParams<{ toolId: string }>();
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+
+  // Deep linking support
+  const isValidToolId = toolId && toolId !== 'undefined';
+  const deepLinkedTool = useQuery(api.tools.getById, isValidToolId ? { id: toolId as any } : "skip");
+
+  useEffect(() => {
+    if (deepLinkedTool) {
+      setSelectedTool(deepLinkedTool);
+    }
+  }, [deepLinkedTool]);
 
   const tools = useQuery(api.tools.get, {
     search: search.trim() || undefined,
     category: activeCategory === 'All' ? undefined : activeCategory,
   });
+
+  const categoriesData = useQuery(api.tools.getCategories);
+  const categories = ['All', ...(categoriesData?.map(c => c.name) || [])];
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -47,7 +63,7 @@ export default function HomeScreen() {
     try {
       const stored = await AsyncStorage.getItem('favorites');
       if (stored) setFavorites(JSON.parse(stored));
-      
+
       const storedComparing = await AsyncStorage.getItem('comparing');
       if (storedComparing) setComparing(JSON.parse(storedComparing));
     } catch (err) {
@@ -106,7 +122,7 @@ export default function HomeScreen() {
       color={item.color}
       isFavorite={favorites.includes(item._id)}
       isComparing={comparing.includes(item._id)}
-      onPress={() => router.push(`/tool/${item._id}`)}
+      onPress={() => setSelectedTool(item)}
       onToggleFavorite={() => toggleFavorite(item._id)}
       onToggleCompare={() => toggleCompare(item._id)}
     />
@@ -117,8 +133,8 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
         <View style={styles.header}>
-          <View style={{ height: 32, width: 150, borderRadius: 8, backgroundColor: liquidGlassTheme.surface, marginBottom: 8 }} />
-          <View style={{ height: 16, width: 220, borderRadius: 4, backgroundColor: liquidGlassTheme.surface }} />
+          <View style={{ height: 32, width: 150, borderRadius: 8, backgroundColor: clayTheme.surface, marginBottom: 8 }} />
+          <View style={{ height: 16, width: 220, borderRadius: 4, backgroundColor: clayTheme.surface }} />
         </View>
         <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
@@ -136,7 +152,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <FlatList
         testID="tools-list"
         data={tools}
@@ -146,7 +162,7 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={liquidGlassTheme.accent.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={clayTheme.accent.primary} />
         }
         ListHeaderComponent={
           <View>
@@ -157,7 +173,7 @@ export default function HomeScreen() {
             </View>
 
             {/* Search */}
-            <GlassSearchBar
+            <ClaySearchBar
               testID="search-input"
               value={search}
               onChangeText={setSearch}
@@ -169,7 +185,7 @@ export default function HomeScreen() {
               testID="category-tabs"
               horizontal
               showsHorizontalScrollIndicator={false}
-              data={CATEGORIES}
+              data={categories}
               keyExtractor={item => item}
               contentContainerStyle={styles.categoryList}
               renderItem={({ item }) => (
@@ -205,28 +221,25 @@ export default function HomeScreen() {
                   keyExtractor={item => item._id}
                   contentContainerStyle={styles.featuredList}
                   renderItem={({ item }) => (
-                    <TouchableOpacity
+                    <AnimatedPress
                       testID={`featured-card-${item._id}`}
                       style={styles.featuredCard}
-                      onPress={() => router.push(`/tool/${item._id}`)}
-                      activeOpacity={0.7}
+                      onPress={() => setSelectedTool(item)}
                       accessibilityLabel={`Open featured tool ${item.name}`}
                       accessibilityRole="button"
                     >
-                      <View style={[styles.featuredIcon, { backgroundColor: item.icon_url ? 'transparent' : item.color }]}>
-                        {item.icon_url ? (
-                          <Image
-                            source={{ uri: item.icon_url }}
-                            style={styles.featuredIconImage}
-                            contentFit="contain"
-                          />
-                        ) : (
-                          <Text style={styles.featuredIconLetter}>{item.icon_letter}</Text>
-                        )}
-                      </View>
+                      <ToolIcon
+                        url={item.icon_url}
+                        letter={item.icon_letter}
+                        color={item.color}
+                        size={56}
+                        borderRadius={16}
+                        fontSize={24}
+                        style={{ marginBottom: 12 }}
+                      />
                       <Text style={styles.featuredName} numberOfLines={1}>{item.name}</Text>
                       <Text style={styles.featuredDesc} numberOfLines={2}>{item.description}</Text>
-                    </TouchableOpacity>
+                    </AnimatedPress>
                   )}
                 />
               </View>
@@ -243,11 +256,29 @@ export default function HomeScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            icon="search-outline"
+            icon="search"
             title="No tools found"
             subtitle="Try adjusting your search or filter"
           />
         }
+      />
+      <ComparisonBar
+        count={comparing.length}
+        onClear={() => {
+          setComparing([]);
+          AsyncStorage.setItem('comparing', JSON.stringify([]));
+        }}
+        onCompare={() => {
+          if (comparing.length > 1) {
+            router.push({ pathname: '/compare', params: { ids: comparing.join(',') } });
+          }
+        }}
+      />
+      <ToolDetailSheet
+        tool={selectedTool}
+        visible={!!selectedTool}
+        onClose={() => setSelectedTool(null)}
+        onRelatedToolClick={setSelectedTool}
       />
     </SafeAreaView>
   );
@@ -256,7 +287,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: liquidGlassTheme.background,
+    backgroundColor: clayTheme.background,
   },
   loadingContainer: {
     flex: 1,
@@ -265,112 +296,109 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.sm,
+    paddingTop: spacing['3xl'], // More robust spacing
+    paddingBottom: spacing.md,
   },
   headerTitle: {
-    fontSize: Math.min(32, width * 0.08),
-    fontWeight: '700',
-    color: liquidGlassTheme.text.primary,
+    fontSize: 28, // Sightly smaller, tighter
+    fontWeight: '800',
+    color: clayTheme.text.primary,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
-    fontSize: Math.min(14, width * 0.035),
-    color: liquidGlassTheme.text.secondary,
-    marginTop: 4,
+    fontSize: 14,
+    color: clayTheme.text.secondary,
+    marginTop: 6,
+    fontWeight: '500',
   },
   categoryList: {
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
+    paddingBottom: spacing.xl, // More breathing room for shadows
+    gap: 12, // Consistent gap
   },
   categoryTab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: liquidGlassTheme.glass.border,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: clayTheme.surface,
+    // Soft Clay Shadow
+    shadowColor: clayTheme.clay.shadowDark,
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
+    marginVertical: 4, // Allow shadow space
   },
   categoryTabActive: {
-    backgroundColor: liquidGlassTheme.accent.primary,
-    borderColor: liquidGlassTheme.accent.primary,
+    backgroundColor: clayTheme.accent.primary,
+    shadowColor: clayTheme.accent.primary,
+    shadowOpacity: 0.3,
   },
   categoryTabText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: liquidGlassTheme.text.secondary,
+    fontSize: 14,
+    fontWeight: '600',
+    color: clayTheme.text.secondary,
   },
   categoryTabTextActive: {
     color: '#FFFFFF',
-    fontWeight: '600',
   },
   sectionContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing['2xl'],
   },
   sectionTitle: {
-    fontSize: Math.min(18, width * 0.05),
-    fontWeight: '600',
-    color: liquidGlassTheme.text.primary,
+    fontSize: 18,
+    fontWeight: '700',
+    color: clayTheme.text.primary,
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
+    letterSpacing: -0.5,
   },
   toolCount: {
-    fontSize: Math.min(14, width * 0.035),
-    color: liquidGlassTheme.text.tertiary,
-    fontWeight: '500',
+    fontSize: 14,
+    color: clayTheme.text.tertiary,
+    fontWeight: '600',
+    backgroundColor: clayTheme.clay.background,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   featuredList: {
     paddingHorizontal: spacing.xl,
-    gap: spacing.md,
+    gap: spacing.lg,
+    paddingBottom: spacing.lg, // Shadow space
   },
   featuredCard: {
-    width: 180,
-    backgroundColor: liquidGlassTheme.surface,
-    borderRadius: liquidGlassTheme.glass.borderRadius,
+    width: 220, // Wider for presence
+    height: 180,
+    backgroundColor: clayTheme.surface,
+    borderRadius: 28, // Rounder
     padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: liquidGlassTheme.glass.border,
-    shadowColor: liquidGlassTheme.glass.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-  },
-  featuredIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  featuredIconImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 12,
-  },
-  featuredIconLetter: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    // Deep Clay Shadow
+    shadowColor: clayTheme.clay.shadowDark,
+    shadowOffset: { width: 8, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+    justifyContent: 'space-between',
   },
   featuredName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: liquidGlassTheme.text.primary,
+    fontSize: 18,
+    fontWeight: '700',
+    color: clayTheme.text.primary,
     marginBottom: 4,
   },
   featuredDesc: {
-    fontSize: 12,
-    color: liquidGlassTheme.text.secondary,
-    lineHeight: 16,
+    fontSize: 13,
+    color: clayTheme.text.secondary,
+    lineHeight: 18,
   },
   row: {
     paddingHorizontal: spacing.xl,
     gap: spacing.md,
   },
   listContent: {
-    paddingBottom: 100,
+    paddingBottom: 120, // Extra space for floating nav/compare bar
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -378,5 +406,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
+    marginTop: spacing.sm,
   },
 });

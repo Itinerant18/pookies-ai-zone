@@ -241,7 +241,7 @@ export const fixAllIcons = mutation({
     console.log("\n📊 ICON FIX SUMMARY:");
     console.log(`Total Tools: ${summary.totalTools}`);
     console.log(`Updated Icons: ${summary.updatedIcons}`);
-    console.log(`Fallback Icons: ${summary.fallbackCount}`);
+    console.log(`Fallback Icons: ${summary.fallbackIcons}`);
     console.log(`Valid Icons: ${summary.validIcons}`);
     console.log(`Invalid Icons: ${summary.invalidIcons}`);
     console.log(`Success Rate: ${summary.successRate}`);

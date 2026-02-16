@@ -7,7 +7,7 @@ import {
     Text,
     ViewStyle,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { liquidGlassTheme, glassUtils, spacing } from '../../theme/liquidGlass';
 
 interface GlassSearchBarProps {
@@ -27,7 +27,7 @@ export function GlassSearchBar({
 }: GlassSearchBarProps) {
     return (
         <View style={styles.container}>
-            <Ionicons name="search-outline" size={18} color={liquidGlassTheme.text.tertiary} />
+            <FontAwesome name="search" size={18} color={liquidGlassTheme.text.tertiary} />
             <TextInput
                 testID={testID}
                 style={styles.input}
@@ -45,7 +45,7 @@ export function GlassSearchBar({
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     accessibilityLabel="Clear search"
                 >
-                    <Ionicons name="close-circle" size={18} color={liquidGlassTheme.text.tertiary} />
+                    <FontAwesome name="times-circle" size={18} color={liquidGlassTheme.text.tertiary} />
                 </TouchableOpacity>
             )}
         </View>
