@@ -1,0 +1,13 @@
+{
+  "appId": "com.hestia.control",
+  "appName": "FAS Control",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

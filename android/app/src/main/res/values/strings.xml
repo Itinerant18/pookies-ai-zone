@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FAS Control</string>
+    <string name="title_activity_main">FAS Control</string>
+    <string name="package_name">com.hestia.control</string>
+    <string name="custom_url_scheme">com.hestia.control</string>
+</resources>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D32F2F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B71C1C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)"/>
+  <!-- Inner design - stylized flame/house symbol for Hestia/Onetawsm -->
+  <path d="M256 80 L400 200 L400 400 L112 400 L112 200 Z" fill="white" opacity="0.95"/>
+  <!-- Heart/flame shape in center -->
+  <path d="M256 160 C200 160 160 200 160 250 C160 320 256 400 256 400 C256 400 352 320 352 250 C352 200 312 160 256 160" fill="url(#grad1)"/>
+  <!-- Small flame tip -->
+  <path d="M256 120 C240 140 230 160 230 180 C230 200 245 210 256 200 C267 210 282 200 282 180 C282 160 272 140 256 120" fill="#F57C00"/>
+</svg>

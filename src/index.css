@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* User Defined Palette — Light Theme */
+  --color-primary: #5E6D85;
+  --color-primary-dark: #4E5F78;
+  --color-accent: #FF7A45;
+  --color-accent-light: #FFB74D;
+  --color-background: #f0f2f5;
+  --color-card: #ffffff;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-divider: #e2e8f0;
+
+  /* Tailwind Semantic Mappings — Light Theme */
+  --background: 220 14% 96%;
+  /* #f0f2f5 */
+  --foreground: 215 28% 17%;
+  /* #1e293b */
+
+  --card: 0 0% 100%;
+  /* #ffffff */
+  --card-foreground: 215 28% 17%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 28% 17%;
+
+  --primary: 217 17% 45%;
+  /* #5E6D85 Brand primary */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 218 21% 39%;
+  /* #4E5F78 Brand primary-dark */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 220 14% 96%;
+  /* #f1f5f9 Light muted surfaces */
+  --muted-foreground: 215 16% 47%;
+  /* #64748b Slate-500 */
+
+  --accent: 17 100% 64%;
+  /* #FF7A45 Brand accent */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 214 32% 91%;
+  /* #e2e8f0 Slate-200 */
+  --input: 214 32% 91%;
+  /* Slate-200 for input borders */
+  --ring: 17 100% 64%;
+  /* Accent for rings */
+
+  /* Chart colors */
+  --chart-1: 17 100% 64%;
+  --chart-2: 217 17% 45%;
+  --chart-3: 218 21% 39%;
+  --chart-4: 35 100% 65%;
+  --chart-5: 27 96% 61%;
+}
+
+.dark {
+  /* Dark mode mappings - for now, reusing the same palette as it's already quite dark/custom */
+  --background: 218 17% 46%;
+  --foreground: 0 0% 100%;
+  --card: 217 17% 45%;
+  --card-foreground: 0 0% 100%;
+  --popover: 217 17% 45%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 217 17% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 218 21% 39%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 218 20% 87%;
+  --muted-foreground: 218 21% 39%;
+  --accent: 17 100% 64%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 216 20% 92%;
+  --input: 217 17% 45%;
+  --ring: 17 100% 64%;
+  --chart-1: 17 100% 64%;
+  --chart-2: 217 17% 45%;
+  --chart-3: 218 21% 39%;
+  --chart-4: 35 100% 65%;
+  --chart-5: 27 96% 61%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
