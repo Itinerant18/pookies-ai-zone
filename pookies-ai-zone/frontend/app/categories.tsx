@@ -19,51 +19,52 @@ import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool, CategoryData } from '../types';
 import { ToolIcon } from '../components/ui/tool-icon';
-import { clayTheme, clayUtils, spacing } from '../theme/clay';
+import { clayTheme, clayUtils, spacing, layout } from '../theme/clay';
 import { Shimmer } from '../components/ui/shimmer';
 import { ComparisonBar } from '../components/ui/comparison-bar';
+import { AnimatedListItem } from '../components/ui/animated-list-item';
 
 const CATEGORY_ICONS: Record<string, string> = {
-  '3D & Creative': 'cube',
-  'API & Testing': 'code',
+  '3D & Creative': 'cube', // or 'cubes'
+  'API & Testing': 'cogs', // was 'code'
   'Analytics': 'line-chart',
   'Assistants & Agents': 'magic',
   'Automation & Prod.': 'bolt',
-  'Browsers': 'globe',
+  'Browsers': 'chrome', // or 'globe'
   'CRM & Support': 'users',
-  'Chatbots': 'comments',
+  'Chatbots': 'comments-o',
   'Creative & Design': 'paint-brush',
   'Data & Analytics': 'bar-chart',
-  'Database & Backend': 'server',
-  'Deployment & Host.': 'rocket',
-  'Design & UI': 'object-group',
-  'Dev & Engineering': 'terminal',
-  'Document Analysis': 'file-text',
+  'Database & Backend': 'database', // was 'server'
+  'Deployment & Host.': 'cloud-upload', // was 'rocket'
+  'Design & UI': 'pencil-square-o', // was 'object-group'
+  'Dev & Engineering': 'code', // was 'terminal'
+  'Document Analysis': 'file-text-o',
   'E-commerce': 'shopping-cart',
-  'Editors & IDEs': 'file-code-o',
+  'Editors & IDEs': 'code', // or 'file-code-o'
   'Finance': 'money',
-  'Form Builders': 'list-alt',
-  'HR & Recruitment': 'user-plus',
-  'Health & Wellness': 'heart-o',
-  'Image Generation': 'image',
-  'Industry-Specific': 'building',
-  'LLMs & Chatbots': 'microchip',
+  'Form Builders': 'check-square-o', // was 'list-alt'
+  'HR & Recruitment': 'id-card-o', // was 'user-plus'
+  'Health & Wellness': 'medkit', // was 'heart-o'
+  'Image Generation': 'picture-o', // was 'image'
+  'Industry-Specific': 'industry', // was 'building'
+  'LLMs & Chatbots': 'commenting-o', // or 'microchip'
   'Learning & Edu.': 'graduation-cap',
-  'Legal': 'briefcase',
+  'Legal': 'gavel', // was 'briefcase'
   'Marketing & Sales': 'bullhorn',
-  'Monitoring & Obs.': 'heartbeat',
+  'Monitoring & Obs.': 'eye', // was 'heartbeat'
   'Music & Audio': 'music',
-  'Note-taking': 'pencil',
-  'Productivity': 'tasks',
-  'Research & Edu.': 'search',
+  'Note-taking': 'sticky-note-o', // was 'pencil'
+  'Productivity': 'rocket', // was 'tasks'
+  'Research & Edu.': 'book', // was 'search'
   'Security & Privacy': 'shield',
-  'Social Media': 'share-alt',
+  'Social Media': 'share-square-o', // was 'share-alt'
   'Spreadsheets': 'table',
-  'Task Management': 'check-square-o',
-  'Translation': 'language',
+  'Task Management': 'list-alt', // was 'check-square-o'
+  'Translation': 'globe', // was 'language'
   'Video Generation': 'video-camera',
-  'Web & App Builders': 'laptop',
-  'Writing & Content': 'pencil-square-o',
+  'Web & App Builders': 'desktop', // was 'laptop'
+  'Writing & Content': 'pencil', // was 'pencil-square-o'
 };
 
 export default function CategoriesScreen() {
@@ -161,97 +162,30 @@ export default function CategoriesScreen() {
             <Text style={styles.headerSubtitle}>Browse tools by type</Text>
           </View>
         }
-        renderItem={({ item: cat }) => {
-          const isExpanded = expandedCategory === cat.name;
-          const catTools = getToolsByCategory(cat.name);
-          const iconName = CATEGORY_ICONS[cat.name] || 'list-ul';
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        renderItem={({ item: cat, index }) => {
+          const iconName = CATEGORY_ICONS[cat.name] || 'tags';
           const accentColor = (clayTheme.categories as any)[cat.name] || clayTheme.accent.primary;
 
           return (
-            <View style={styles.categorySection}>
+            <AnimatedListItem index={index}>
               <TouchableOpacity
-                testID={`category-section-${cat.name.replace(/\s+/g, '-').toLowerCase()}`}
-                style={styles.categoryHeader}
-                onPress={() => setExpandedCategory(isExpanded ? null : cat.name)}
-                activeOpacity={0.7}
-                accessibilityLabel={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
-                accessibilityRole="button"
+                testID={`category-card-${cat.name.replace(/\s+/g, '-').toLowerCase()}`}
+                style={styles.categoryCard}
+                onPress={() => router.push(`/category/${encodeURIComponent(cat.name)}`)}
+                activeOpacity={0.8}
               >
-                <View style={styles.categoryHeaderLeft}>
-                  <View style={[styles.categoryIconBox, { backgroundColor: accentColor + '20' }]}>
-                    <FontAwesome name={iconName as any} size={20} color={accentColor} />
-                  </View>
-                  <View>
-                    <Text style={styles.categoryName}>{cat.name}</Text>
-                    <Text style={styles.categoryCount}>{cat.count} tools</Text>
-                  </View>
+                <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+                <View style={[styles.cardIconBox, { backgroundColor: accentColor + '15' }]}>
+                  <FontAwesome name={iconName as any} size={20} color={accentColor} />
                 </View>
-                <View style={[styles.chevronBox, isExpanded && styles.chevronBoxActive]}>
-                  <FontAwesome
-                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                    size={16}
-                    color={clayTheme.text.tertiary}
-                  />
+                <View style={styles.cardTextArea}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>{cat.name}</Text>
+                  <Text style={styles.cardCount}>{cat.count} tools</Text>
                 </View>
               </TouchableOpacity>
-
-              {isExpanded && (
-                <View style={styles.toolsList}>
-                  {catTools.map((tool: Tool) => (
-                    <TouchableOpacity
-                      key={tool._id}
-                      testID={`category-tool-${tool._id}`}
-                      style={styles.toolRow}
-                      onPress={() => router.push(`/tool/${tool._id}`)}
-                      activeOpacity={0.7}
-                      accessibilityLabel={`Open ${tool.name}`}
-                      accessibilityRole="button"
-                    >
-                      <View style={styles.toolRowLeft}>
-                        <ToolIcon
-                          url={tool.icon_url}
-                          letter={tool.icon_letter}
-                          color={tool.color}
-                          size={32}
-                          borderRadius={10}
-                          fontSize={14}
-                        />
-                        <View style={styles.toolRowInfo}>
-                          <Text style={styles.toolRowName}>{tool.name}</Text>
-                          <Text style={styles.toolRowDesc} numberOfLines={1}>{tool.description}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.toolRowRight}>
-                        <TouchableOpacity
-                          onPress={() => toggleCompare(tool._id)}
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        >
-                          <FontAwesome
-                            name={comparing.includes(tool._id) ? 'bar-chart' : 'bar-chart-o'}
-                            size={16}
-                            color={comparing.includes(tool._id) ? clayTheme.accent.primary : clayTheme.text.tertiary}
-                          />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          testID={`cat-fav-btn-${tool._id}`}
-                          onPress={() => toggleFavorite(tool._id)}
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                          accessibilityLabel={favorites.includes(tool._id) ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
-                          accessibilityRole="button"
-                        >
-                          <FontAwesome
-                            name={favorites.includes(tool._id) ? 'heart' : 'heart-o'}
-                            size={16}
-                            color={favorites.includes(tool._id) ? clayTheme.accent.error : clayTheme.text.tertiary}
-                          />
-                        </TouchableOpacity>
-                        <FontAwesome name="chevron-right" size={14} color={clayTheme.text.tertiary} />
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
+            </AnimatedListItem>
           );
         }}
       />
@@ -282,16 +216,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingBottom: 100,
+    paddingBottom: layout.listBottomPadding,
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
     color: clayTheme.text.primary,
     letterSpacing: -0.5,
   },
@@ -300,103 +234,47 @@ const styles = StyleSheet.create({
     color: clayTheme.text.secondary,
     marginTop: 4,
   },
-  categorySection: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+  columnWrapper: {
+    paddingHorizontal: layout.screenPadding,
+    gap: layout.cardGap,
+    marginBottom: layout.cardGap,
+  },
+  categoryCard: {
+    flex: 1,
     ...clayUtils.card,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     overflow: 'hidden',
-  } as ViewStyle,
-  categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  categoryHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  categoryIconBox: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
+  } as any,
+  accentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+  } as any,
+  cardIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 10,
+  } as any,
+  cardTextArea: {
+    flex: 1,
   },
-  categoryName: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 13,
     fontWeight: '600',
     color: clayTheme.text.primary,
+    marginBottom: 2,
   },
-  categoryCount: {
-    fontSize: 12,
+  cardCount: {
+    fontSize: 11,
     color: clayTheme.text.tertiary,
-    marginTop: 2,
-  },
-  chevronBox: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  chevronBoxActive: {
-    backgroundColor: clayTheme.surface,
-  },
-  toolsList: {
-    borderTopWidth: 0.5,
-    borderTopColor: clayTheme.clay.shadowDark,
-  },
-  toolRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: spacing.lg,
-    borderBottomWidth: 0.5,
-    borderBottomColor: clayTheme.clay.shadowDark,
-  },
-  toolRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
-  },
-  toolDot: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  toolRowIcon: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  toolDotLetter: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  toolRowInfo: {
-    flex: 1,
-  },
-  toolRowName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: clayTheme.text.primary,
-  },
-  toolRowDesc: {
-    fontSize: 12,
-    color: clayTheme.text.tertiary,
-    marginTop: 2,
-  },
-  toolRowRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
   },
 });

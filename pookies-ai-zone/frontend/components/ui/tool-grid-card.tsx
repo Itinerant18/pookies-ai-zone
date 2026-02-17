@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         flex: 1,
         ...clayUtils.card,
         padding: 14,
-        marginBottom: spacing.md,
+        overflow: 'hidden',
     } as ViewStyle,
     cardComparing: {
         borderColor: clayTheme.accent.primary,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 10,
+        marginBottom: 8,
     },
     headerActions: {
         flexDirection: 'row',
@@ -139,17 +139,19 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: clayTheme.text.primary,
-        marginBottom: 4,
+        marginBottom: 2,
     },
     desc: {
-        fontSize: 12,
+        fontSize: 11,
         color: clayTheme.text.secondary,
-        lineHeight: 16,
-        marginBottom: 10,
+        lineHeight: 15,
     },
     pill: {
-        ...clayUtils.pill,
         alignSelf: 'flex-start',
+        backgroundColor: '#F4F6F8',
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
     } as ViewStyle,
     pillText: {
         fontSize: 10,

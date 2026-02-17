@@ -14,21 +14,24 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
 import { ToolIcon } from '../components/ui/tool-icon';
-import { clayTheme, clayUtils, spacing, typography } from '../theme/clay';
+import { clayTheme, spacing, layout } from '../theme/clay';
 import { ToolGridCard } from '../components/ui/tool-grid-card';
-import { ClaySearchBar } from '../components/ui/clay-search-bar';
+import { GlobalSearch } from '../components/ui/global-search';
 import { EmptyState } from '../components/ui/empty-state';
 import { ToolGridCardSkeleton } from '../components/ui/tool-grid-card-skeleton';
 import { ComparisonBar } from '../components/ui/comparison-bar';
 import { AnimatedPress } from '../components/ui/animated-press';
+import { AnimatedListItem } from '../components/ui/animated-list-item';
 import { ToolDetailSheet } from '../components/tool/tool-detail-sheet';
 
 const { width } = Dimensions.get('window');
+const FEATURED_CARD_WIDTH = Math.round(width * 0.52);
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -38,6 +41,7 @@ export default function HomeScreen() {
   const [comparing, setComparing] = useState<string[]>([]);
   const { toolId } = useLocalSearchParams<{ toolId: string }>();
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   // Deep linking support
   const isValidToolId = toolId && toolId !== 'undefined';
@@ -55,7 +59,7 @@ export default function HomeScreen() {
   });
 
   const categoriesData = useQuery(api.tools.getCategories);
-  const categories = ['All', ...(categoriesData?.map(c => c.name) || [])];
+  const categories = ['All', ...(categoriesData?.map((c: any) => c.name) || [])];
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -109,23 +113,25 @@ export default function HomeScreen() {
     setTimeout(() => setRefreshing(false), 1000);
   }, [loadFavorites]);
 
-  const featuredTools = tools ? tools.filter((t: Tool) => t.featured) : [];
+  const featuredTools = tools?.filter((t: any) => t.featured) || [];
 
-  const renderToolCard = useCallback(({ item }: { item: Tool }) => (
-    <ToolGridCard
-      testID={`tool-card-${item._id}`}
-      name={item.name}
-      description={item.description}
-      category={item.category}
-      iconUrl={item.icon_url}
-      iconLetter={item.icon_letter}
-      color={item.color}
-      isFavorite={favorites.includes(item._id)}
-      isComparing={comparing.includes(item._id)}
-      onPress={() => setSelectedTool(item)}
-      onToggleFavorite={() => toggleFavorite(item._id)}
-      onToggleCompare={() => toggleCompare(item._id)}
-    />
+  const renderToolCard = useCallback(({ item, index }: { item: Tool; index: number }) => (
+    <AnimatedListItem index={index}>
+      <ToolGridCard
+        testID={`tool-card-${item._id}`}
+        name={item.name}
+        description={item.description}
+        category={item.category}
+        iconUrl={item.icon_url}
+        iconLetter={item.icon_letter}
+        color={item.color}
+        isFavorite={favorites.includes(item._id)}
+        isComparing={comparing.includes(item._id)}
+        onPress={() => setSelectedTool(item)}
+        onToggleFavorite={() => toggleFavorite(item._id)}
+        onToggleCompare={() => toggleCompare(item._id)}
+      />
+    </AnimatedListItem>
   ), [favorites, comparing, toggleFavorite, toggleCompare, router]);
 
   if (tools === undefined) {
@@ -168,16 +174,39 @@ export default function HomeScreen() {
           <View>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.headerTitle}>AI Tools</Text>
-              <Text style={styles.headerSubtitle}>{tools.length} tools curated for developers</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.headerTitle}>AI Tools</Text>
+                <Text style={styles.headerSubtitle}>{tools.length} tools curated for developers</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => router.push('/preferences' as any)}
+                style={{ padding: 8, borderRadius: 12, backgroundColor: clayTheme.surface }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Preferences"
+              >
+                <FontAwesome name="sliders" size={18} color={clayTheme.text.secondary} />
+              </TouchableOpacity>
             </View>
 
             {/* Search */}
-            <ClaySearchBar
-              testID="search-input"
-              value={search}
-              onChangeText={setSearch}
-              onSubmit={Keyboard.dismiss}
+            <TouchableOpacity
+              style={styles.searchTrigger}
+              onPress={() => setSearchModalOpen(true)}
+              activeOpacity={0.7}
+            >
+              <FontAwesome name="search" size={16} color={clayTheme.text.tertiary} />
+              <Text style={styles.searchPlaceholder}>
+                {search || 'Search 320+ AI tools...'}
+              </Text>
+            </TouchableOpacity>
+            <GlobalSearch
+              useModal
+              visible={searchModalOpen}
+              onClose={() => setSearchModalOpen(false)}
+              onSelectTool={(tool) => {
+                setSelectedTool(tool);
+                setSearchModalOpen(false);
+              }}
             />
 
             {/* Category Tabs */}
@@ -279,6 +308,8 @@ export default function HomeScreen() {
         visible={!!selectedTool}
         onClose={() => setSelectedTool(null)}
         onRelatedToolClick={setSelectedTool}
+        isComparing={selectedTool ? comparing.includes(selectedTool._id) : false}
+        onToggleCompare={() => selectedTool && toggleCompare(selectedTool._id)}
       />
     </SafeAreaView>
   );
@@ -295,12 +326,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing['3xl'], // More robust spacing
-    paddingBottom: spacing.md,
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   headerTitle: {
-    fontSize: 28, // Sightly smaller, tighter
+    fontSize: 26,
     fontWeight: '800',
     color: clayTheme.text.primary,
     letterSpacing: -0.5,
@@ -312,22 +343,21 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   categoryList: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl, // More breathing room for shadows
-    gap: 12, // Consistent gap
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: spacing.md,
+    gap: 10,
   },
   categoryTab: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: clayTheme.surface,
-    // Soft Clay Shadow
     shadowColor: clayTheme.clay.shadowDark,
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
-    marginVertical: 4, // Allow shadow space
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
+    marginVertical: 3,
   },
   categoryTabActive: {
     backgroundColor: clayTheme.accent.primary,
@@ -346,12 +376,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing['2xl'],
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: clayTheme.text.primary,
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    letterSpacing: -0.5,
+    paddingHorizontal: layout.screenPadding,
+    marginBottom: spacing.sm,
+    letterSpacing: -0.3,
   },
   toolCount: {
     fontSize: 14,
@@ -364,22 +394,21 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   featuredList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.lg,
-    paddingBottom: spacing.lg, // Shadow space
+    paddingHorizontal: layout.screenPadding,
+    gap: layout.cardGap,
+    paddingBottom: spacing.sm,
   },
   featuredCard: {
-    width: 220, // Wider for presence
-    height: 180,
+    width: FEATURED_CARD_WIDTH,
+    height: 160,
     backgroundColor: clayTheme.surface,
-    borderRadius: 28, // Rounder
-    padding: spacing.lg,
-    // Deep Clay Shadow
+    borderRadius: 22,
+    padding: spacing.md,
     shadowColor: clayTheme.clay.shadowDark,
-    shadowOffset: { width: 8, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
     justifyContent: 'space-between',
   },
   featuredName: {
@@ -394,18 +423,38 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   row: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.md,
+    paddingHorizontal: layout.screenPadding,
+    gap: layout.cardGap,
+    marginBottom: layout.cardGap,
   },
   listContent: {
-    paddingBottom: 120, // Extra space for floating nav/compare bar
+    paddingBottom: layout.listBottomPadding,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    marginTop: spacing.sm,
+    paddingHorizontal: layout.screenPadding,
+    marginBottom: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  searchTrigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: clayTheme.surface,
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
+    height: 44,
+    gap: spacing.sm,
+    shadowColor: clayTheme.clay.shadowDark,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  searchPlaceholder: {
+    flex: 1,
+    fontSize: 15,
+    color: clayTheme.text.tertiary,
   },
 });

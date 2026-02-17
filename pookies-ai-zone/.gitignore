@@ -1,0 +1,62 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.vscode/
+.idea/
+
+# Environment Variables (Secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# Node.js / Frontend
+node_modules/
+package-lock.json
+# Keep package-lock if you want consistent installs, but often users prefer yarn.lock if using yarn
+# Since user has package-lock in root? No, in frontend.
+# Let's keep package-lock.json as it's standard.
+# But ignore yarn-error.log
+yarn-error.log
+
+# Expo / React Native
+.expo/
+dist/
+web-build/
+android/app/build/
+android/app/src/main/assets/
+ios/Pods/
+ios/build/
+
+# Backend / Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+test_reports/
+
+# Project Specific / Generated
+memory/
+test_result.md
+tools-data.json
+design_guidelines.json
+*.tsbuildinfo
+
+# One-off scripts (optional - uncomment to ignore)
+# run-icon-update.js
+# fix-tools.js
+# update_tool_icons.py

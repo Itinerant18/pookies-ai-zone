@@ -4,12 +4,33 @@ import { FontAwesome } from '@expo/vector-icons';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { clayTheme } from '../theme/clay';
 import { ClayTabBar } from '@/components/navigation/clay-tab-bar';
+import { OnboardingScreen, ONBOARDING_COMPLETE_KEY } from '@/components/onboarding/onboarding-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL || "https://placeholder-url.convex.cloud", {
   unsavedChangesWarning: false,
 });
 
 export default function TabLayout() {
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY).then(val => {
+      setOnboardingDone(val === 'true');
+    });
+  }, []);
+
+  // Loading
+  if (onboardingDone === null) return null;
+
+  // Show onboarding
+  if (!onboardingDone) {
+    return (
+      <OnboardingScreen onComplete={() => setOnboardingDone(true)} />
+    );
+  }
+
   return (
     <ConvexProvider client={convex}>
       <Tabs
@@ -46,7 +67,22 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="compare"
+          options={{
+            title: 'Compare',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome name="exchange" size={20} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="tool/[id]"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="preferences"
           options={{
             href: null,
           }}

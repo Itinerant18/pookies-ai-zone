@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as files from "../files.js";
 import type * as iconFixes from "../iconFixes.js";
 import type * as iconUpdates from "../iconUpdates.js";
 import type * as tools from "../tools.js";
@@ -19,6 +20,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  files: typeof files;
   iconFixes: typeof iconFixes;
   iconUpdates: typeof iconUpdates;
   tools: typeof tools;

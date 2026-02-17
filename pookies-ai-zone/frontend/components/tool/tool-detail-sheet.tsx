@@ -10,14 +10,15 @@ import {
     Platform,
     Dimensions,
     Modal,
-    TouchableOpacity
+    TouchableOpacity,
+    Share
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { clayTheme, clayUtils, spacing } from '../../theme/clay';
-import { Tool } from '../../types';
+import { Tool, PlatformData, FeatureData, PricingData } from '../../types';
 import { ToolIcon } from '../../components/ui/tool-icon';
 import { ClayButton } from '../../components/ui/clay-button';
 import { ClayChip } from '../../components/ui/clay-chip';
@@ -25,17 +26,89 @@ import { ClayCard } from '../../components/ui/clay-card';
 import { ClayInput } from '../../components/ui/clay-input';
 import { AnimatedPress } from '../../components/ui/animated-press';
 import { RelatedTools } from '../../components/tool/related-tools';
+import { ToolReviews } from '../../components/tool/tool-reviews';
+
+const PLATFORM_ICONS: Record<string, string> = {
+    'Web': 'globe',
+    'iOS': 'apple',
+    'Android': 'android',
+    'API': 'plug',
+    'Desktop': 'desktop',
+    'Mobile': 'mobile',
+    'macOS': 'apple',
+    'Windows': 'windows',
+    'Linux': 'linux',
+    'CLI': 'terminal',
+    'Chrome': 'chrome',
+    'VS Code': 'code',
+    'Slack': 'slack',
+    'Self-Hosted': 'server',
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+    web: 'Web', ios: 'iOS', android: 'Android', macos: 'macOS',
+    windows: 'Windows', linux: 'Linux', api: 'API', self_hosted: 'Self-Hosted',
+};
+
+const FEATURE_LABELS: Record<string, string> = {
+    ai_text: 'AI Text', ai_image: 'AI Image', ai_video: 'AI Video',
+    ai_code: 'AI Code', ai_audio: 'AI Audio', ai_chat: 'AI Chat',
+    api_access: 'API Access', webhooks: 'Webhooks', sso: 'SSO',
+    team_collaboration: 'Team Collab', custom_branding: 'Branding',
+    export_pdf: 'PDF Export', export_csv: 'CSV Export',
+};
+
+/** Convert {web: true, ios: false, android: true} → ["Web", "Android"] */
+function extractPlatforms(data?: PlatformData): string[] {
+    if (!data) return [];
+    return Object.entries(data)
+        .filter(([_, v]) => v === true)
+        .map(([k]) => PLATFORM_LABELS[k] || k)
+        .filter(Boolean);
+}
+
+/** Convert {ai_text: true, api_access: true} → ["AI Text", "API Access"] */
+function extractFeatures(data?: FeatureData): string[] {
+    if (!data) return [];
+    return Object.entries(data)
+        .filter(([_, v]) => v === true)
+        .map(([k]) => FEATURE_LABELS[k] || k)
+        .filter(Boolean);
+}
+
+/** Get effective pricing: comparison_data.pricing → legacy tool.pricing → null */
+function getEffectivePricing(tool: Tool): PricingData | null {
+    if (tool.comparison_data?.pricing) return tool.comparison_data.pricing;
+    if (tool.pricing) return tool.pricing;
+    return null;
+}
+
+/** Get difficulty label */
+function getDifficultyLabel(d: number): string {
+    const labels = ['', 'Beginner', 'Easy', 'Intermediate', 'Advanced', 'Expert'];
+    return labels[d] || '';
+}
 
 const { width, height } = Dimensions.get('window');
 
+// Update Props interface
 interface ToolDetailSheetProps {
     tool: Tool | null;
     visible: boolean;
     onClose: () => void;
     onRelatedToolClick?: (tool: Tool) => void;
+    isComparing?: boolean;
+    onToggleCompare?: () => void;
 }
 
-export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible, onClose, onRelatedToolClick }) => {
+export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({
+    tool,
+    visible,
+    onClose,
+    onRelatedToolClick,
+    isComparing = false,
+    onToggleCompare
+}) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [userNote, setUserNote] = useState('');
 
@@ -99,6 +172,18 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
 
     const primaryColor = tool.color || clayTheme.accent.primary;
 
+    const handleShare = async () => {
+        try {
+            const result = await Share.share({
+                message: `Check out ${tool.name} on Pookies AI Zone: ${tool.url || ''}`,
+                url: tool.url || '',
+                title: tool.name,
+            });
+        } catch (error: any) {
+            console.error(error.message);
+        }
+    };
+
     return (
         <Modal
             visible={visible}
@@ -109,27 +194,26 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
             <View style={styles.container}>
                 <StatusBar barStyle="dark-content" />
 
-                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
-                    {/* Navigation Header */}
-                    <SafeAreaView edges={['top']} style={styles.navHeader}>
+                <SafeAreaView edges={['top']} style={styles.navHeader}>
+                    <ClayButton
+                        onPress={onClose}
+                        variant="secondary"
+                        size="sm"
+                        icon="times"
+                        style={styles.navBtn}
+                    />
+                    <View style={styles.navRight}>
                         <ClayButton
-                            onPress={onClose}
+                            onPress={handleShare}
                             variant="secondary"
                             size="sm"
-                            icon="times"
+                            icon="share-square-o"
                             style={styles.navBtn}
                         />
-                        <View style={styles.navRight}>
-                            <ClayButton
-                                onPress={() => { /* share */ }}
-                                variant="secondary"
-                                size="sm"
-                                icon="share-square-o"
-                                style={styles.navBtn}
-                            />
-                        </View>
-                    </SafeAreaView>
+                    </View>
+                </SafeAreaView>
+
+                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
                     {/* Immersive Hero Section */}
                     <View style={styles.heroSection}>
@@ -174,73 +258,117 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
                     </View>
 
                     {/* Pricing Card */}
-                    {tool.pricing && (
+                    {(() => {
+                        const pricing = getEffectivePricing(tool);
+                        if (!pricing) return null;
+                        return (
+                            <View style={styles.sectionPadding}>
+                                <ClayCard style={styles.pricingCard}>
+                                    <View style={styles.pricingHeader}>
+                                        <View style={[styles.pricingIcon, { backgroundColor: primaryColor + '20' }]}>
+                                            <FontAwesome name="tag" size={18} color={primaryColor} />
+                                        </View>
+                                        <View>
+                                            <Text style={styles.pricingLabel}>Pricing Model</Text>
+                                            <Text style={styles.pricingModel}>{pricing.model || 'Unknown'}</Text>
+                                        </View>
+                                    </View>
+                                    {pricing.starting_price !== undefined && pricing.starting_price > 0 ? (
+                                        <View style={styles.priceTag}>
+                                            <Text style={styles.currency}>{pricing.currency || '$'}</Text>
+                                            <Text style={styles.priceAmount}>{pricing.starting_price}</Text>
+                                            <Text style={styles.pricePeriod}>/mo</Text>
+                                        </View>
+                                    ) : pricing.free_tier ? (
+                                        <View style={[styles.freeBadge, { backgroundColor: '#10B981' + '20' }]}>
+                                            <FontAwesome name="check-circle" size={14} color="#10B981" />
+                                            <Text style={[styles.freeBadgeText, { color: '#10B981' }]}>Free Tier</Text>
+                                        </View>
+                                    ) : null}
+                                </ClayCard>
+                            </View>
+                        );
+                    })()}
+
+                    {/* Difficulty & Use Cases Row */}
+                    {(tool.comparison_data?.difficulty || (tool.comparison_data?.use_cases && tool.comparison_data.use_cases.length > 0)) && (
                         <View style={styles.sectionPadding}>
-                            <ClayCard style={styles.pricingCard}>
-                                <View style={styles.pricingHeader}>
-                                    <View style={[styles.pricingIcon, { backgroundColor: primaryColor + '20' }]}>
-                                        <FontAwesome name="tag" size={18} color={primaryColor} />
-                                    </View>
-                                    <View>
-                                        <Text style={styles.pricingLabel}>Pricing Model</Text>
-                                        <Text style={styles.pricingModel}>{tool.pricing.model}</Text>
-                                    </View>
-                                </View>
-                                {tool.pricing.starting_price !== undefined && (
-                                    <View style={styles.priceTag}>
-                                        <Text style={styles.currency}>{tool.pricing.currency || '$'}</Text>
-                                        <Text style={styles.priceAmount}>{tool.pricing.starting_price}</Text>
-                                        <Text style={styles.pricePeriod}>/mo</Text>
+                            <View style={styles.metaRow}>
+                                {tool.comparison_data?.difficulty && (
+                                    <View style={styles.difficultyBadge}>
+                                        <FontAwesome name="signal" size={14} color={clayTheme.text.secondary} />
+                                        <Text style={styles.difficultyText}>
+                                            {getDifficultyLabel(tool.comparison_data.difficulty)}
+                                        </Text>
+                                        <View style={styles.difficultyDots}>
+                                            {[1, 2, 3, 4, 5].map(n => (
+                                                <View key={n} style={[
+                                                    styles.difficultyDot,
+                                                    { backgroundColor: n <= (tool.comparison_data?.difficulty || 0) ? primaryColor : '#E2E8F0' }
+                                                ]} />
+                                            ))}
+                                        </View>
                                     </View>
                                 )}
-                            </ClayCard>
+                            </View>
+                            {tool.comparison_data?.use_cases && tool.comparison_data.use_cases.length > 0 && (
+                                <View style={[styles.tagsWrap, { marginTop: 10 }]}>
+                                    {tool.comparison_data.use_cases.map((uc: string) => (
+                                        <ClayChip key={uc} label={uc} color={clayTheme.text.tertiary} />
+                                    ))}
+                                </View>
+                            )}
                         </View>
                     )}
 
                     {/* Two-Column Grid for Features & Platforms */}
-                    <View style={styles.gridContainer}>
-                        {/* Platforms */}
-                        {tool.platforms && tool.platforms.length > 0 && (
-                            <View style={[styles.gridItem, { marginRight: 8 }]}>
-                                <ClayCard style={styles.specCard}>
-                                    <View style={styles.specHeader}>
-                                        <FontAwesome name="desktop" size={16} color={clayTheme.text.secondary} />
-                                        <Text style={styles.specTitle}>Platforms</Text>
-                                    </View>
-                                    <View style={styles.tagsWrap}>
-                                        {tool.platforms.map((p: string) => (
-                                            <View key={p} style={styles.miniTag}>
-                                                <Text style={styles.miniTagText}>{p}</Text>
+                    {(() => {
+                        const platforms = extractPlatforms(tool.comparison_data?.platforms) || tool.platforms || [];
+                        const features = extractFeatures(tool.comparison_data?.features) || tool.features || [];
+                        if (platforms.length === 0 && features.length === 0) return null;
+                        return (
+                            <View style={styles.gridContainer}>
+                                {/* Platforms */}
+                                {platforms.length > 0 && (
+                                    <View style={[styles.gridItem, features.length > 0 ? { marginRight: 8 } : {}]}>
+                                        <ClayCard style={styles.specCard}>
+                                            <View style={styles.specHeader}>
+                                                <FontAwesome name="desktop" size={16} color={clayTheme.text.secondary} />
+                                                <Text style={styles.specTitle}>Platforms</Text>
                                             </View>
-                                        ))}
+                                            <View style={styles.tagsWrap}>
+                                                {platforms.map((p: string) => (
+                                                    <View key={p} style={styles.platformTag}>
+                                                        <FontAwesome name={(PLATFORM_ICONS[p] || 'circle') as any} size={13} color={primaryColor} style={{ marginRight: 5 }} />
+                                                        <Text style={styles.miniTagText}>{p}</Text>
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        </ClayCard>
                                     </View>
-                                </ClayCard>
-                            </View>
-                        )}
+                                )}
 
-                        {/* Features */}
-                        {tool.features && tool.features.length > 0 && (
-                            <View style={[styles.gridItem, { marginLeft: 8 }]}>
-                                <ClayCard style={styles.specCard}>
-                                    <View style={styles.specHeader}>
-                                        <FontAwesome name="bolt" size={16} color={clayTheme.text.secondary} />
-                                        <Text style={styles.specTitle}>Features</Text>
-                                    </View>
-                                    <View style={styles.tagsWrap}>
-                                        {tool.features.slice(0, 3).map((f: string) => (
-                                            <View key={f} style={styles.featureRow}>
-                                                <FontAwesome name="check" size={12} color={clayTheme.accent.success} />
-                                                <Text style={styles.featureText} numberOfLines={1}>{f}</Text>
+                                {/* Features */}
+                                {features.length > 0 && (
+                                    <View style={[styles.gridItem, platforms.length > 0 ? { marginLeft: 8 } : {}]}>
+                                        <ClayCard style={styles.specCard}>
+                                            <View style={styles.specHeader}>
+                                                <FontAwesome name="bolt" size={16} color={clayTheme.text.secondary} />
+                                                <Text style={styles.specTitle}>Features</Text>
                                             </View>
-                                        ))}
-                                        {tool.features.length > 3 && (
-                                            <Text style={styles.moreText}>+{tool.features.length - 3} more</Text>
-                                        )}
+                                            <View style={styles.tagsWrap}>
+                                                {features.map((f: string) => (
+                                                    <View key={f} style={[styles.featureTag, { borderColor: primaryColor + '30', backgroundColor: primaryColor + '08' }]}>
+                                                        <Text style={[styles.featureTagText, { color: primaryColor }]}>{f}</Text>
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        </ClayCard>
                                     </View>
-                                </ClayCard>
+                                )}
                             </View>
-                        )}
-                    </View>
+                        );
+                    })()}
 
                     {/* Pros & Cons Specs */}
                     {(tool.pros || tool.cons) && (
@@ -289,6 +417,9 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
                         </ClayCard>
                     </View>
 
+                    {/* Ratings & Reviews */}
+                    <ToolReviews toolId={tool._id} />
+
                     {/* Related Tools */}
                     <RelatedTools
                         category={tool.category}
@@ -299,8 +430,6 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
                     {/* Bottom Spacer for Sticky Bar */}
                     <View style={{ height: 100 }} />
                 </ScrollView>
-
-                {/* Sticky Action Bar */}
                 <View style={styles.stickyBar}>
                     <ClayButton
                         onPress={toggleFavorite}
@@ -309,6 +438,15 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
                         textStyle={{ color: isFavorite ? clayTheme.accent.error : clayTheme.text.primary }}
                         style={styles.fabSecondary}
                     />
+                    {onToggleCompare && (
+                        <ClayButton
+                            onPress={onToggleCompare}
+                            variant="secondary"
+                            icon={isComparing ? 'check-square-o' : 'plus-square-o'}
+                            textStyle={{ color: isComparing ? clayTheme.accent.primary : clayTheme.text.primary }}
+                            style={styles.fabSecondary}
+                        />
+                    )}
                     <ClayButton
                         title="Visit Website"
                         onPress={openLink}
@@ -317,8 +455,8 @@ export const ToolDetailSheet: React.FC<ToolDetailSheetProps> = ({ tool, visible,
                         style={styles.fabPrimary}
                     />
                 </View>
-            </View>
-        </Modal>
+            </View >
+        </Modal >
     );
 };
 
@@ -532,6 +670,26 @@ const styles = StyleSheet.create({
         color: clayTheme.text.secondary,
         fontWeight: '500',
     },
+    platformTag: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: clayTheme.background,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    featureTag: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
+        borderWidth: 1,
+    },
+    featureTagText: {
+        fontSize: 11,
+        fontWeight: '600',
+    },
     featureRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -600,5 +758,49 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
         shadowRadius: 12,
         elevation: 8,
-    }
+    },
+    freeBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+    freeBadgeText: {
+        fontSize: 13,
+        fontWeight: '700',
+    },
+    metaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.md,
+        flexWrap: 'wrap',
+    },
+    difficultyBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: clayTheme.surface,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    difficultyText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: clayTheme.text.secondary,
+    },
+    difficultyDots: {
+        flexDirection: 'row',
+        gap: 3,
+        marginLeft: 4,
+    },
+    difficultyDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+    },
 });

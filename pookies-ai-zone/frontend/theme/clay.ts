@@ -117,9 +117,16 @@ export const spacing = {
     sm: 12,
     md: 16,
     lg: 24,
-    xl: 32,
-    '2xl': 40,
-    '3xl': 56,
+    xl: 24,
+    '2xl': 32,
+    '3xl': 44,
+};
+
+// ─── Layout Constants ──────────────────────────────────────────────────
+export const layout = {
+    screenPadding: 16,
+    cardGap: 12,
+    listBottomPadding: 100,
 };
 
 // ─── Clay Utility Generators ──────────────────────────────────────────
@@ -128,13 +135,10 @@ export const clayUtils = {
         backgroundColor: clayTheme.clay.background,
         borderRadius: clayTheme.clay.borderRadius,
         shadowColor: clayTheme.clay.shadowDark,
-        shadowOffset: { width: 8, height: 8 },
-        shadowOpacity: 0.25, // Increased opacity for distinct look
-        shadowRadius: 16,
-        elevation: 8,
-        // Optional border for definition
-        // borderWidth: 1,
-        // borderColor: 'rgba(255,255,255,0.6)',
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.18,
+        shadowRadius: 10,
+        elevation: 5,
     },
     cardPressed: {
         transform: [{ scale: 0.98 }],
@@ -146,13 +150,13 @@ export const clayUtils = {
     pill: {
         backgroundColor: clayTheme.surface,
         borderRadius: 30,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingHorizontal: 14,
+        paddingVertical: 6,
         shadowColor: clayTheme.clay.shadowDark,
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.2, // Slightly more pronounced
-        shadowRadius: 8,
-        elevation: 4,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     button: {
         backgroundColor: clayTheme.surface,
@@ -185,14 +189,14 @@ export const clayUtils = {
     searchBar: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        height: 56,
-        paddingHorizontal: 20,
+        height: 48,
+        paddingHorizontal: 16,
         flexDirection: 'row' as const,
         alignItems: 'center' as const,
         shadowColor: clayTheme.clay.shadowDark,
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-        elevation: 3,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 2,
     },
 };

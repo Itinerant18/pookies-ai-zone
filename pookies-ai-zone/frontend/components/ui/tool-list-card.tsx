@@ -9,7 +9,7 @@ import {
 import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
 import { ToolIcon } from './tool-icon';
-import { clayTheme, clayUtils, spacing } from '../../theme/clay';
+import { clayTheme, clayUtils, spacing, layout } from '../../theme/clay';
 import { AnimatedPress } from './animated-press';
 
 interface ToolListCardProps {
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         ...clayUtils.card,
         padding: 14,
-        marginHorizontal: spacing.lg,
+        marginHorizontal: layout.screenPadding,
         marginBottom: 10,
     } as ViewStyle,
     cardComparing: {
@@ -151,9 +151,12 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     pill: {
-        ...clayUtils.pill,
         alignSelf: 'flex-start',
         marginTop: 6,
+        backgroundColor: '#F4F6F8',
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
     } as ViewStyle,
     pillText: {
         fontSize: 10,

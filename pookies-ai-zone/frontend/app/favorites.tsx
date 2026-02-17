@@ -15,12 +15,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Tool } from '../types';
-import { clayTheme, spacing } from '../theme/clay';
+import { clayTheme, spacing, layout } from '../theme/clay';
 import { ToolListCard } from '../components/ui/tool-list-card';
 import { EmptyState } from '../components/ui/empty-state';
 import { ToolListCardSkeleton } from '../components/ui/tool-list-card-skeleton';
 import { Shimmer } from '../components/ui/shimmer';
 import { ComparisonBar } from '../components/ui/comparison-bar';
+import { AnimatedListItem } from '../components/ui/animated-list-item';
 
 export default function FavoritesScreen() {
   const router = useRouter();
@@ -114,21 +115,23 @@ export default function FavoritesScreen() {
             </Text>
           </View>
         }
-        renderItem={({ item: tool }) => (
-          <ToolListCard
-            testID={`fav-tool-${tool._id}`}
-            name={tool.name}
-            description={tool.description}
-            category={tool.category}
-            iconUrl={tool.icon_url}
-            iconLetter={tool.icon_letter}
-            color={tool.color}
-            isFavorite={true}
-            isComparing={comparing.includes(tool._id)}
-            onPress={() => router.push(`/tool/${tool._id}`)}
-            onToggleFavorite={() => removeFavorite(tool._id)}
-            onToggleCompare={() => toggleCompare(tool._id)}
-          />
+        renderItem={({ item: tool, index }) => (
+          <AnimatedListItem index={index}>
+            <ToolListCard
+              testID={`fav-tool-${tool._id}`}
+              name={tool.name}
+              description={tool.description}
+              category={tool.category}
+              iconUrl={tool.icon_url}
+              iconLetter={tool.icon_letter}
+              color={tool.color}
+              isFavorite={true}
+              isComparing={comparing.includes(tool._id)}
+              onPress={() => router.push(`/tool/${tool._id}`)}
+              onToggleFavorite={() => removeFavorite(tool._id)}
+              onToggleCompare={() => toggleCompare(tool._id)}
+            />
+          </AnimatedListItem>
         )}
         ListEmptyComponent={
           <EmptyState
@@ -168,16 +171,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingBottom: 100,
+    paddingBottom: layout.listBottomPadding,
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: layout.screenPadding,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
     color: clayTheme.text.primary,
     letterSpacing: -0.5,
   },
