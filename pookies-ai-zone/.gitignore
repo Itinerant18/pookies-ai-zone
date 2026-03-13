@@ -1,0 +1,39 @@
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+
+# Android / iOS
+android/
+ios/
+*.apk
+*.ipa
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+backend/backend.log
+
+# Project Specific
+pookies-ai-zone/memory/
+pookies-ai-zone/test_reports/
+pookies-ai-zone/test_result.md
+pookies-ai-zone/.emergent/
+pookies-ai-zone/.pytest_cache/
+
+# Environment
+.env
+.env.local
+frontend/.env
+backend/.env
+
+# Misc
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+nul
