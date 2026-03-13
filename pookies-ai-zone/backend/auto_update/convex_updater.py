@@ -12,7 +12,7 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-CONVEX_URL = "https://descriptive-swan-405.eu-west-1.convex.cloud"
+CONVEX_URL = os.environ.get("CONVEX_URL", "https://descriptive-swan-405.eu-west-1.convex.cloud")
 
 SAMPLE_NEW_TOOLS = [
     {"name": "GPT-5", "description": "Next generation AI assistant from OpenAI", "category": "LLMs & Chatbots", "url": "https://openai.com/gpt5", "color": "#10A37F", "source": "auto-update"},

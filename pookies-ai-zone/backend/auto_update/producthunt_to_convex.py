@@ -35,7 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── Config ────────────────────────────────────────────────────
-CONVEX_URL = "https://festive-fish-491.eu-west-1.convex.cloud"
+CONVEX_URL = os.environ.get("CONVEX_URL", "https://festive-fish-491.eu-west-1.convex.cloud")
 PH_GRAPHQL = "https://api.producthunt.com/v2/api/graphql"
 
 # Category mapping: PH topic slug → our app category

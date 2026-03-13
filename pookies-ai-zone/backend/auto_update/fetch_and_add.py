@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Use dev deployment for local access
-CONVEX_URL = "https://festive-fish-491.eu-west-1.convex.cloud"
+CONVEX_URL = os.environ.get("CONVEX_URL", "https://festive-fish-491.eu-west-1.convex.cloud")
 
 async def call_convex(function_name: str, args: dict) -> dict:
     """Call a Convex function via HTTP API."""

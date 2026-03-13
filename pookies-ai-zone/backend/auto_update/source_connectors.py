@@ -14,7 +14,7 @@ import re
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-CONVEX_URL = "https://descriptive-swan-405.eu-west-1.convex.cloud"
+CONVEX_URL = os.environ.get("CONVEX_URL", "https://descriptive-swan-405.eu-west-1.convex.cloud")
 
 CATEGORY_MAP = {
     "text": "Writing & Content",
