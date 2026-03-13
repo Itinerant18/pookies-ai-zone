@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "frontend",
-    "slug": "frontend",
+    "slug": "pookies-ai-zone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -27,15 +27,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-image.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#000"
-        }
-      ]
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -43,8 +35,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "46c616cd-d8a4-4995-a6f7-f8aea9e63663"
+        "projectId": "34a99511-e656-44b1-9020-e529e170600c"
       }
-    }
+    },
+    "owner": "itinerants-organization"
   }
 }

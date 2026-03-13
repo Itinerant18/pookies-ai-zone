@@ -1,50 +1,107 @@
-# Welcome to your Expo app 👋
+# Pookies AI Zone - Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An Expo/React Native app for discovering and comparing AI tools.
 
-## Get started
+## Project Setup
 
-1. Install dependencies
-
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
-
+2. Start the development server:
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Building APK
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Important: Standalone APK
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+By default, debug APKs require Metro bundler to be running. The build configuration has been modified to include the JavaScript bundle in the debug APK, making it standalone (works without Metro).
 
-## Get a fresh project
+### Prerequisites
 
-When you're ready, run:
+- Android SDK must be installed and configured
+- Set `ANDROID_HOME` environment variable or create `android/local.properties` with:
+  ```
+  sdk.dir=C\:\\Users\\<username>\\AppData\\Local\\Android\\Sdk
+  ```
+
+### Build Debug APK (Standalone)
+
+Due to Windows path length limitations (260 characters) with CMake/Ninja in the new architecture, build from a shorter path:
 
 ```bash
-npm run reset-project
+# Option 1: Copy project to shorter path and build
+cp -r . /c/pookies-app
+cd /c/pookies-app
+npx expo prebuild --platform android
+cd android
+./gradlew assembleDebug
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+```bash
+# Option 2: Use the convenience script
+./scripts/build-android.sh
+```
 
-## Learn more
+The APK will be generated at: `android/app/build/outputs/apk/debug/app-debug.apk`
 
-To learn more about developing your project with Expo, look at the following resources:
+Note: If you get import errors with `@/` aliases, ensure you're using relative imports in `app/_layout.tsx` like:
+```tsx
+import { ClayTabBar } from '../components/navigation/clay-tab-bar';
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Build Release APK
 
-## Join the community
+```bash
+cd /c/pookies-app/android
+./gradlew assembleRelease
+```
 
-Join our community of developers creating universal apps.
+Release APK: `android/app/build/outputs/apk/release/app-release.apk`
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+```
+frontend/
+├── app/                    # Expo Router screens
+│   ├── _layout.tsx         # Root layout
+│   ├── index.tsx          # Home screen
+│   ├── categories.tsx     # Categories list
+│   ├── category/[id].tsx  # Category detail
+│   ├── tool/[id].tsx      # Tool detail
+│   ├── compare.tsx        # Compare tools
+│   ├── favorites.tsx      # Favorites
+│   └── preferences.tsx    # User preferences
+├── components/            # Reusable components
+│   ├── ui/               # UI primitives
+│   ├── tool/             # Tool-related components
+│   └── recommendations/  # Recommendation components
+├── hooks/                # Custom React hooks
+├── services/             # API services
+├── utils/                # Utility functions
+├── theme/               # Theme configuration
+├── data/                # Seed data
+└── types/               # TypeScript types
+```
+
+## Tech Stack
+
+- **Framework**: Expo SDK 54 / React Native 0.81
+- **Routing**: Expo Router 6
+- **State**: React hooks + AsyncStorage
+- **Navigation**: React Navigation 7
+- **Animations**: React Native Reanimated 4 + React Native Worklets
+- **Database**: Convex
+- **Styling**: Custom clay/morphmorphic UI components
+
+## App Features
+
+- Browse AI tools by category
+- Search and filter tools
+- Compare tools side-by-side
+- Save favorites
+- View tool details and reviews
+- User preferences management

@@ -30,7 +30,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
     sortBy,
     onSortChange,
 }) => {
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(true);
 
     const sortOptions = [
         { key: 'name', label: 'Name', icon: 'sort-alpha-asc' },
@@ -39,25 +39,37 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
         { key: 'score', label: 'Score', icon: 'star' },
     ] as const;
 
+    const activeFilterCount = (selectedCategory !== 'All' ? 1 : 0) + (selectedPriceRange !== null ? 1 : 0);
+
     return (
         <View style={styles.container}>
-            {/* Filter Toggle */}
+            {/* Filter Toggle - Clay Button Style */}
             <TouchableOpacity
-                style={styles.filterToggle}
+                style={[styles.filterToggle, showFilters && styles.filterToggleActive]}
                 onPress={() => setShowFilters(!showFilters)}
+                activeOpacity={0.7}
             >
-                <FontAwesome
-                    name={showFilters ? 'filter' : 'filter'}
-                    size={16}
-                    color={clayTheme.accent.primary}
-                />
-                <Text style={styles.filterToggleText}>
-                    {showFilters ? 'Hide Filters' : 'Show Filters'}
-                </Text>
+                <View style={styles.filterToggleContent}>
+                    <View style={[styles.filterIconContainer, showFilters && styles.filterIconContainerActive]}>
+                        <FontAwesome
+                            name="sliders"
+                            size={14}
+                            color={showFilters ? '#FFF' : clayTheme.accent.primary}
+                        />
+                    </View>
+                    <Text style={[styles.filterToggleText, showFilters && styles.filterToggleTextActive]}>
+                        Filters
+                    </Text>
+                    {activeFilterCount > 0 && (
+                        <View style={styles.filterBadge}>
+                            <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+                        </View>
+                    )}
+                </View>
                 <FontAwesome
                     name={showFilters ? 'chevron-up' : 'chevron-down'}
                     size={12}
-                    color={clayTheme.accent.primary}
+                    color={showFilters ? '#FFF' : clayTheme.accent.primary}
                 />
             </TouchableOpacity>
 
@@ -66,7 +78,10 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                 <View style={styles.filtersContent}>
                     {/* Category Filter */}
                     <View style={styles.filterSection}>
-                        <Text style={styles.filterLabel}>Category</Text>
+                        <View style={styles.filterSectionHeader}>
+                            <FontAwesome name="folder-o" size={12} color={clayTheme.text.tertiary} />
+                            <Text style={styles.filterLabel}>Category</Text>
+                        </View>
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -78,6 +93,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                                     selectedCategory === 'All' && styles.categoryChipActive,
                                 ]}
                                 onPress={() => onCategoryChange('All')}
+                                activeOpacity={0.7}
                             >
                                 <Text
                                     style={[
@@ -96,6 +112,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                                         selectedCategory === cat && styles.categoryChipActive,
                                     ]}
                                     onPress={() => onCategoryChange(cat)}
+                                    activeOpacity={0.7}
                                 >
                                     <Text
                                         style={[
@@ -112,7 +129,10 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
 
                     {/* Price Range Filter */}
                     <View style={styles.filterSection}>
-                        <Text style={styles.filterLabel}>Price Range</Text>
+                        <View style={styles.filterSectionHeader}>
+                            <FontAwesome name="money" size={12} color={clayTheme.text.tertiary} />
+                            <Text style={styles.filterLabel}>Price Range</Text>
+                        </View>
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -124,6 +144,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                                     selectedPriceRange === null && styles.priceChipActive,
                                 ]}
                                 onPress={() => onPriceRangeChange(null)}
+                                activeOpacity={0.7}
                             >
                                 <Text
                                     style={[
@@ -142,6 +163,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                                         selectedPriceRange === index && styles.priceChipActive,
                                     ]}
                                     onPress={() => onPriceRangeChange(index)}
+                                    activeOpacity={0.7}
                                 >
                                     <Text
                                         style={[
@@ -158,10 +180,17 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                 </View>
             )}
 
-            {/* Sort Options */}
+            {/* Sort Options - Always Visible */}
             <View style={styles.sortSection}>
-                <Text style={styles.filterLabel}>Sort By</Text>
-                <View style={styles.sortOptions}>
+                <View style={styles.sortSectionHeader}>
+                    <FontAwesome name="sort-amount-asc" size={12} color={clayTheme.text.tertiary} />
+                    <Text style={styles.filterLabel}>Sort By</Text>
+                </View>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.sortOptions}
+                >
                     {sortOptions.map((option) => (
                         <TouchableOpacity
                             key={option.key}
@@ -170,10 +199,11 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                                 sortBy === option.key && styles.sortOptionActive,
                             ]}
                             onPress={() => onSortChange(option.key)}
+                            activeOpacity={0.7}
                         >
                             <FontAwesome
                                 name={option.icon as any}
-                                size={14}
+                                size={12}
                                 color={
                                     sortBy === option.key
                                         ? '#FFF'
@@ -190,7 +220,7 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
                             </Text>
                         </TouchableOpacity>
                     ))}
-                </View>
+                </ScrollView>
             </View>
         </View>
     );
@@ -199,50 +229,103 @@ export const CompareFilter: React.FC<CompareFilterProps> = ({
 const styles = StyleSheet.create({
     container: {
         backgroundColor: clayTheme.surface,
-        paddingVertical: spacing.md,
+        paddingVertical: spacing.sm,
         borderBottomWidth: 1,
-        borderBottomColor: clayTheme.background,
+        borderBottomColor: 'rgba(0,0,0,0.05)',
     },
     filterToggle: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
+        justifyContent: 'space-between',
+        marginHorizontal: spacing.md,
+        paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
+        borderRadius: 16,
+        backgroundColor: clayTheme.background,
+        shadowColor: clayTheme.clay.shadowLight,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    filterToggleActive: {
+        backgroundColor: clayTheme.accent.primary,
+    },
+    filterToggleContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    filterIconContainer: {
+        width: 28,
+        height: 28,
+        borderRadius: 8,
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    filterIconContainerActive: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     filterToggleText: {
-        color: clayTheme.accent.primary,
+        color: clayTheme.text.primary,
         fontWeight: '600',
         fontSize: 14,
     },
+    filterToggleTextActive: {
+        color: '#FFF',
+    },
+    filterBadge: {
+        backgroundColor: clayTheme.accent.secondary,
+        borderRadius: 10,
+        minWidth: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 6,
+    },
+    filterBadgeText: {
+        color: '#FFF',
+        fontSize: 11,
+        fontWeight: '700',
+    },
     filtersContent: {
-        paddingHorizontal: spacing.md,
-        paddingBottom: spacing.md,
+        paddingTop: spacing.md,
     },
     filterSection: {
         marginBottom: spacing.md,
     },
+    filterSectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: spacing.sm,
+        paddingHorizontal: spacing.md,
+    },
     filterLabel: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: '700',
         color: clayTheme.text.tertiary,
         textTransform: 'uppercase',
-        marginBottom: spacing.sm,
-        paddingHorizontal: spacing.xs,
+        letterSpacing: 0.5,
     },
     categoryList: {
         flexDirection: 'row',
         gap: 8,
-        paddingHorizontal: spacing.xs,
+        paddingHorizontal: spacing.md,
+        paddingBottom: spacing.xs,
     },
     categoryChip: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
         backgroundColor: clayTheme.background,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
     },
     categoryChipActive: {
         backgroundColor: clayTheme.accent.primary,
+        borderColor: clayTheme.accent.primary,
     },
     categoryChipText: {
         fontSize: 13,
@@ -251,20 +334,25 @@ const styles = StyleSheet.create({
     },
     categoryChipTextActive: {
         color: '#FFF',
+        fontWeight: '600',
     },
     priceList: {
         flexDirection: 'row',
         gap: 8,
-        paddingHorizontal: spacing.xs,
+        paddingHorizontal: spacing.md,
+        paddingBottom: spacing.xs,
     },
     priceChip: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
         backgroundColor: clayTheme.background,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
     },
     priceChipActive: {
         backgroundColor: clayTheme.accent.secondary,
+        borderColor: clayTheme.accent.secondary,
     },
     priceChipText: {
         fontSize: 13,
@@ -273,25 +361,39 @@ const styles = StyleSheet.create({
     },
     priceChipTextActive: {
         color: '#FFF',
+        fontWeight: '600',
     },
     sortSection: {
+        paddingTop: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(0,0,0,0.05)',
+    },
+    sortSectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: spacing.sm,
         paddingHorizontal: spacing.md,
     },
     sortOptions: {
         flexDirection: 'row',
         gap: 8,
+        paddingHorizontal: spacing.md,
     },
     sortOption: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 12,
+        gap: 6,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 16,
         backgroundColor: clayTheme.background,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
     },
     sortOptionActive: {
         backgroundColor: clayTheme.accent.primary,
+        borderColor: clayTheme.accent.primary,
     },
     sortOptionText: {
         fontSize: 12,
@@ -300,5 +402,6 @@ const styles = StyleSheet.create({
     },
     sortOptionTextActive: {
         color: '#FFF',
+        fontWeight: '600',
     },
 });

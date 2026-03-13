@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { clayTheme } from '../theme/clay';
-import { ClayTabBar } from '@/components/navigation/clay-tab-bar';
-import { OnboardingScreen, ONBOARDING_COMPLETE_KEY } from '@/components/onboarding/onboarding-screen';
+import { ClayTabBar } from '../components/navigation/clay-tab-bar';
+import { OnboardingScreen, ONBOARDING_COMPLETE_KEY } from '../components/onboarding/onboarding-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 

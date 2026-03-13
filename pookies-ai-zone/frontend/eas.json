@@ -1,6 +1,7 @@
 {
     "cli": {
-        "version": ">= 7.0.0"
+        "version": ">= 7.0.0",
+        "appVersionSource": "remote"
     },
     "build": {
         "development": {
@@ -11,11 +12,17 @@
             "distribution": "internal",
             "android": {
                 "buildType": "apk"
+            },
+            "env": {
+                "EXPO_PUBLIC_CONVEX_URL": "https://festive-fish-491.eu-west-1.convex.cloud"
             }
         },
         "production": {
             "android": {
                 "buildType": "app-bundle"
+            },
+            "env": {
+                "EXPO_PUBLIC_CONVEX_URL": "https://festive-fish-491.eu-west-1.convex.cloud"
             }
         }
     },
