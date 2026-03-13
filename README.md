@@ -4,6 +4,27 @@
 
 ---
 
+## 📲 Download & Install
+
+You can download and install the application directly on your Android device using the links below:
+
+### **[📥 Download Latest Release APK](https://github.com/Itinerant18/pookies-ai-zone/raw/main/frontend/android/app/build/outputs/apk/release/app-release.apk)**
+*(Recommended for most users - Smaller size, optimized performance)*
+
+### **[📥 Download Debug APK](https://github.com/Itinerant18/pookies-ai-zone/raw/main/frontend/android/app/build/outputs/apk/debug/app-debug.apk)**
+*(For developers and testing - Larger size, includes debugging symbols)*
+
+---
+
+### **🛠 How to Install**
+1.  **Download**: Click the "Download Latest Release APK" link above on your Android device.
+2.  **Allow Unknown Sources**: If prompted, go to your phone's **Settings > Security** (or **Settings > Apps > Special app access**) and enable **"Install unknown apps"** for your browser or file manager.
+3.  **Open APK**: Locate the downloaded file in your "Downloads" folder and tap on it.
+4.  **Install**: Follow the on-screen prompts to complete the installation.
+5.  **Launch**: Open "Pookies AI Zone" from your app drawer and start exploring!
+
+---
+
 ## 🎯 Project Purpose & Goals
 
 The AI ecosystem is expanding at an unprecedented rate, making it difficult to keep track of new tools and their capabilities. Pookies AI Zone solves this by providing:
