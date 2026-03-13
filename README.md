@@ -30,7 +30,7 @@ Think of Pookies AI Zone as your **personal shopping assistant for AI tools**. J
 
 **The Solution:**
 Pookies AI Zone is a **mobile app** that:
-- ✅ Keeps an updated list of **3,500+ AI tools**
+- ✅ Keeps an updated list of **AI tools**
 - ✅ Organizes them into **45 easy categories** (AI Writing, Coding, Image Generation, etc.)
 - ✅ Lets you compare up to **4 tools side-by-side**
 - ✅ Shows you pricing, features, and where they work (Web, Mobile, API, etc.)
