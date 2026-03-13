@@ -1,5 +1,6 @@
 name: Daily AI Tool Update
 
+# Trigger refresh
 on:
   schedule:
     # Run at 06:00 UTC every day
