@@ -8,7 +8,9 @@ web-build/
 # Android / iOS
 android/
 ios/
-*.apk
+# Allow APKs in the repo
+# *.apk
+!*.apk
 *.ipa
 
 # Python
@@ -19,11 +21,13 @@ env/
 backend/backend.log
 
 # Project Specific
-pookies-ai-zone/memory/
-pookies-ai-zone/test_reports/
-pookies-ai-zone/test_result.md
-pookies-ai-zone/.emergent/
-pookies-ai-zone/.pytest_cache/
+memory/
+test_reports/
+test_result.md
+.agent/
+.emergent/
+.planning/
+.pytest_cache/
 
 # Environment
 .env
@@ -37,4 +41,3 @@ Thumbs.db
 .idea/
 .vscode/
 nul
-node_modules
