@@ -1,0 +1,30 @@
+# .easignore - Files to exclude from EAS Build uploads
+# This reduces upload size and prevents cache corruption issues
+
+# Caches
+.metro-cache/
+.expo/
+.cache/
+
+# Test files
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Development files
+.vscode/
+.idea/
+
+# Large data files
+*.json.bak
+
+# OS files  
+.DS_Store
+Thumbs.db

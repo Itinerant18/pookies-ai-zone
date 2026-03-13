@@ -37,3 +37,4 @@ Thumbs.db
 .idea/
 .vscode/
 nul
+node_modules
