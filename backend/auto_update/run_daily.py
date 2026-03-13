@@ -183,6 +183,7 @@ async def main():
     try:
         if "--run-now" in sys.argv:
             await update_job()
+            return  # Exit after running now
 
         await scheduler.run_daily(update_job, stop_event)
     except KeyboardInterrupt:
