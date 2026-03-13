@@ -1,4 +1,4 @@
-![pookies_ai_zone_architecture](https://github.com/user-attachments/assets/d7e95235-4877-4cd7-8575-98c06d2b9d86)# Pookies AI Zone - Your Personal AI Tools Directory
+# Pookies AI Zone - Your Personal AI Tools Directory
 
 <div align="center">
 
