@@ -1,4 +1,4 @@
-# 🤖 Pookies AI Zone - Your Personal AI Tools Directory
+# Pookies AI Zone - Your Personal AI Tools Directory
 
 <div align="center">
 
@@ -22,7 +22,7 @@
 Think of Pookies AI Zone as your **personal shopping assistant for AI tools**. Just like you might browse Amazon to compare products, Pookies helps you find and compare AI tools all in one place.
 
 **The Problem It Solves:**
-- 🌪️ There are **3,500+ AI tools** out there - and growing every day
+- 🌪️ There are **MANY AI tools** out there - and growing every day
 - 😵 It's impossible to keep track of them all
 - 🔍 Each tool has different pricing, features, and platforms
 - 📊 Comparing them manually is time-consuming
