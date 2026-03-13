@@ -35,6 +35,26 @@ The AI ecosystem is expanding at an unprecedented rate, making it difficult to k
 
 ---
 
+## 🤖 Daily Auto-Update System
+
+The project includes a fully automated pipeline to keep the AI tool database fresh.
+
+### ⚙️ How it Works
+1.  **GitHub Action**: A workflow (`.github/workflows/daily_update.yml`) runs every day at 06:00 UTC.
+2.  **Discovery**: It fetches the latest tools from **Product Hunt**, **HuggingFace**, **GitHub Trending**, and **Reddit**.
+3.  **Enrichment**: The `enrichment_engine.py` automatically fetches logos, pricing, and feature data.
+4.  **Synchronization**: New tools are pushed directly to the **Convex** production backend.
+5.  **Data Persistence**: The root `tools-data.json` is updated and committed back to the repository.
+
+### 🔑 Required GitHub Secrets
+To enable this, the following secrets must be configured in your GitHub repository:
+- `CONVEX_URL`: Your Convex HTTP API endpoint.
+- `PRODUCT_HUNT_ACCESS_TOKEN`: API token from Product Hunt.
+- `PRODUCT_HUNT_API_KEY`: API Key from Product Hunt.
+- `PRODUCT_HUNT_API_SECRET`: API Secret from Product Hunt.
+
+---
+
 ## 📂 Project Structure
 
 ```bash
