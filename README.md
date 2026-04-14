@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/assets/images/icon.png" width="120" alt="Pookies AI Zone" />
+
 
 # 🤖 Pookies AI Zone
 
