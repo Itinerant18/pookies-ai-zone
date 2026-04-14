@@ -1,714 +1,769 @@
-# Pookies AI Zone - Your Personal AI Tools Directory
-
 <div align="center">
 
-![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)
-![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20(Soon)-green.svg)
-![Tools](https://img.shields.io/badge/Tools%20Indexed-3500%2B-orange.svg)
-![Categories](https://img.shields.io/badge/Categories-45%2B-purple.svg)
-![License](https://img.shields.io/badge/License-RnD-lightgrey.svg)
+<img src="frontend/assets/images/icon.png" width="120" alt="Pookies AI Zone" />
 
-**The easiest way to discover, compare, and manage AI tools in the fastest-growing tech ecosystem**
+# 🤖 Pookies AI Zone
 
-[🎯 What is This?](#-what-is-pookies-ai-zone) • [📥 Download](#-download--install) • [⚡ Features](#-key-features) • [👥 For Everyone](#-tailored-for-everyone) • [🛠 Tech Stack](#-tech-stack-for-developers)
+### *The Ultimate AI Tools Directory — Curated, Compared & Always Up-to-Date*
+
+[![React Native](https://img.shields.io/badge/React_Native-0.81-61DAFB?logo=react&logoColor=white)](https://reactnative.dev)
+[![Expo](https://img.shields.io/badge/Expo-54-000020?logo=expo&logoColor=white)](https://expo.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![Convex](https://img.shields.io/badge/Convex-1.15-EE342F?logo=convex&logoColor=white)](https://convex.dev)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Daily Update](https://img.shields.io/badge/Auto_Update-Daily_06:00_UTC-brightgreen?logo=githubactions&logoColor=white)](/.github/workflows/)
+
+**Browse 320+ AI tools. Compare side-by-side. Discover what fits your workflow.**
+
+[Features](#-features) · [Architecture](#-architecture) · [Tech Stack](#-tech-stack) · [Screens](#-screens--navigation) · [Getting Started](#-getting-started) · [Data Pipeline](#-data-pipeline) · [Project Health](#-project-health)
 
 </div>
 
 ---
 
+## 📖 High-Level Description
 
-# 🤔 What is Pookies AI Zone?
+**Pookies AI Zone** is a cross-platform mobile application (iOS · Android · Web) that serves as a comprehensive, always-current directory of AI-powered tools. It is purpose-built for developers, designers, and tech enthusiasts who need to evaluate, compare, and choose the right AI tools for their workflow.
 
-**In Simple Words:**
-Think of Pookies AI Zone as your **personal shopping assistant for AI tools**. Just like you might browse Amazon to compare products, Pookies helps you find and compare AI tools all in one place.
+The app combines:
 
-**The Problem It Solves:**
-- 🌪️ There are **MANY AI tools** out there - and growing every day
-- 😵 It's impossible to keep track of them all
-- 🔍 Each tool has different pricing, features, and platforms
-- 📊 Comparing them manually is time-consuming
-- 🤷 How do you know which tool is right for your needs?
-
-**The Solution:**
-Pookies AI Zone is a **mobile app** that:
-- ✅ Keeps an updated list of **AI tools**
-- ✅ Organizes them into **45 easy categories** (AI Writing, Coding, Image Generation, etc.)
-- ✅ Lets you compare up to **4 tools side-by-side**
-- ✅ Shows you pricing, features, and where they work (Web, Mobile, API, etc.)
-- ✅ Saves your favorites for quick access
-- ✅ Updates automatically with new tools every single day
+- A **real-time, serverless database** (Convex) holding rich metadata for 320+ tools across 40+ categories
+- A **Python-powered auto-update pipeline** that fetches new tools daily from ProductHunt, Futurepedia, and GitHub
+- A **React Native / Expo** mobile frontend featuring a signature **Clay / Neumorphic** design system with smooth animations
+- A **FastAPI proxy backend** that bridges REST clients and the Convex real-time layer
+- A **personalised scoring engine** that matches tools to user preferences (price sensitivity, ease-of-use, feature richness, platform requirements)
 
 ---
 
-# 📥 Download & Install
+## ✨ Features
 
-## 🚀 Get Started in 3 Steps
-
-### **Option 1: Download from Your Phone (Easiest)**
-
-**For Android Users:**
-
-Click the button below directly from your Android phone:
-
-<div align="center">
-
-### **[📥 DOWNLOAD APP (Latest Version) - 45MB](https://github.com/Itinerant18/pookies-ai-zone/raw/main/frontend/android/app/build/outputs/apk/release/app-release.apk)**
-*Click to download directly to your phone*
-
-### **[📥 DOWNLOAD FOR TESTING - 85MB](https://github.com/Itinerant18/pookies-ai-zone/raw/main/frontend/android/app/build/outputs/apk/debug/app-debug.apk)**
-*For developers: includes extra debugging tools*
-
-</div>
-
-### **Step-by-Step Installation:**
-
-#### **Step 1️⃣: Download the App**
-- Click the **"DOWNLOAD APP"** button above on your Android phone
-- The file will start downloading to your **Downloads** folder
-- Wait for the download to complete ✓
-
-#### **Step 2️⃣: Allow Installation from Unknown Sources**
-*(Only needed on first install - don't worry, it's safe!)*
-
-**For Android 12+:**
-1. Open your **Downloads** folder or file manager
-2. Find the downloaded file: `app-release.apk`
-3. Tap it → A popup appears asking for permission
-4. Tap **"Allow"** or **"Install anyway"** ✓
-
-**For Android 11 and below:**
-1. Go to **Settings** → **Security** (or **Apps**)
-2. Look for **"Unknown sources"** or **"Install unknown apps"**
-3. Find your browser/file manager → Toggle **ON** ✓
-4. Now open the APK file to install
-
-#### **Step 3️⃣: Open and Use**
-- Installation is automatic after Step 2
-- Find **"Pookies AI Zone"** in your app drawer 🎯
-- Tap to open and start exploring AI tools! 🚀
+| Feature | Description |
+|---|---|
+| 🔍 **Global Search** | Full-text search across 320+ tool names and descriptions via a Convex search index |
+| 🗂️ **40+ Categories** | Browse tools by curated categories (Editors & IDEs, LLMs, Image Gen, Marketing, etc.) |
+| ⭐ **Featured Shelf** | Horizontally scrolling featured carousel on the home screen |
+| ❤️ **Favourites** | Persist saved tools locally with `AsyncStorage` — works fully offline |
+| ⚖️ **Side-by-Side Compare** | Compare up to 4 tools on pricing, platforms, features, and difficulty |
+| 🎯 **Preference Engine** | Sliders & toggles for price sensitivity, ease-of-use, feature richness, must-haves |
+| 🤝 **Recommendations** | Algorithm calculates match scores against user preferences |
+| 📋 **Tool Detail Sheet** | Bottom sheet with full metadata: pros/cons, pricing, platform support, related tools |
+| 🔗 **Deep Linking** | Navigate directly to any tool via URL (e.g. `/?toolId=<id>`) |
+| 🌊 **Skeleton Loading** | Shimmer skeletons during data fetches for a polished loading experience |
+| 🚀 **Onboarding Flow** | First-launch walkthrough stored in `AsyncStorage` |
+| 🔄 **Daily Auto-Update** | GitHub Actions pipeline refreshes the tools database every day at 06:00 UTC |
+| 📦 **Android APK** | Pre-built debug & release APKs included for direct install |
 
 ---
 
-### **Option 2: Build from Source (For Developers)**
-See [Build Instructions](#-for-developers--build-from-source) below.
+## 🏛️ Architecture
+
+### System Layers
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        PRESENTATION LAYER                           │
+│  React Native + Expo Router (TypeScript)                            │
+│  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌────────┐ ┌──────────┐ │
+│  │  Home    │ │ Categories │ │Favourites│ │Compare │ │Prefs     │ │
+│  │ /index   │ │/categories │ │/favorites│ │/compare│ │/pref..   │ │
+│  └──────────┘ └────────────┘ └──────────┘ └────────┘ └──────────┘ │
+│   ↓ useQuery / useMutation (Convex React hooks)                     │
+└─────────────────────────────────────────────────────────────────────┘
+          │ Real-time WebSocket
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       DATA LAYER  (Convex)                          │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  tools table                                                  │   │
+│  │  • Full-text search indexes (name, description)              │   │
+│  │  • Queries: get, getById, getByIds, getCategories, stats     │   │
+│  │  • Mutations: addTool, addOrUpdateTool, seed, forceReseed    │   │
+│  │  • File storage for custom icons (Convex Storage)            │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+          │ HTTP POST /api/*
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                  REST API LAYER  (FastAPI / Python)                  │
+│  GET /api/tools       → paginated, filterable tool list             │
+│  GET /api/tools/{id}  → single tool detail                          │
+│  GET /api/categories  → category list with counts                   │
+│  GET /api/filters     → filter options (categories, sort options)   │
+└─────────────────────────────────────────────────────────────────────┘
+          │ async HTTP (httpx) — proxies to Convex
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│               AUTO-UPDATE PIPELINE  (Python + GitHub Actions)        │
+│  ┌──────────┐   ┌────────────┐   ┌──────────┐   ┌──────────────┐   │
+│  │ Sources  │──▶│  Verifier  │──▶│ Enricher │──▶│Convex Updater│   │
+│  │  • PH    │   │ (URL check,│   │(pricing, │   │ addOrUpdate  │   │
+│  │  • FP    │   │  de-dup)   │   │ features)│   │ Mutation     │   │
+│  │  • GH    │   └────────────┘   └──────────┘   └──────────────┘   │
+│  └──────────┘                                                        │
+│           Scheduled: 06:00 UTC daily via GitHub Actions cron        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Diagram
+
+```
+ User Device
+     │
+     │  Launch App
+     ▼
+┌─────────────────────┐
+│  Onboarding Check   │ ◄── AsyncStorage: "onboarding_complete"
+│  (first-time only)  │
+└────────┬────────────┘
+         │ Complete
+         ▼
+┌─────────────────────────────────────────────────────┐
+│           ConvexProvider (WebSocket connected)       │
+│  ┌──────────────────────────────────────────────┐   │
+│  │          Bottom Tab Navigator                │   │
+│  │  Home │ Categories │ Favourites │ Compare    │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                      │
+│  ┌──────────────┐     ┌───────────────────────────┐ │
+│  │  useQuery    │────▶│  Convex DB (tools table)  │ │
+│  │  api.tools.* │     │  Real-time subscriptions  │ │
+│  └──────────────┘     └───────────────────────────┘ │
+│                                                      │
+│  ┌─────────────────────────────────────────────┐    │
+│  │  Local State (AsyncStorage)                  │    │
+│  │  • favourites[]  • comparing[]               │    │
+│  │  • userPreferences                           │    │
+│  └─────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────┘
+```
+
+### Component Tree
+
+```
+App (_layout.tsx)
+├── OnboardingScreen           [first launch only]
+└── ConvexProvider
+    └── Tabs (ClayTabBar)
+        ├── HomeScreen (/)
+        │   ├── GlobalSearch (Modal)
+        │   ├── CategoryFilterTabs (horizontal FlatList)
+        │   ├── FeaturedShelf (horizontal FlatList)
+        │   ├── ToolGridCard × N (2-column FlatList)
+        │   │   └── ToolIcon
+        │   ├── ComparisonBar (floating action)
+        │   └── ToolDetailSheet (bottom sheet)
+        │       ├── ToolIcon
+        │       ├── ToolReviews
+        │       └── RelatedTools
+        ├── CategoriesScreen (/categories)
+        │   └── CategoryCard × N
+        ├── FavouritesScreen (/favorites)
+        │   └── ToolListCard × N
+        ├── CompareScreen (/compare)
+        │   ├── CompareFilter
+        │   ├── CompareHeader
+        │   ├── CompareRow × N
+        │   └── ComparisonMatrix
+        ├── [Tool Detail] (/tool/[id])    [hidden tab]
+        └── [Preferences] (/preferences)  [hidden tab]
+            ├── ClaySlider (price, ease, feature)
+            ├── RequirementToggles
+            └── UseCaseChips
+```
 
 ---
 
-## ✨ What You Can Do with the App
-
-### 🏠 **Home Screen** - See Popular Tools
-```
-Search: Type any tool name or keyword
-📌 Featured Tools: Our top picks right now
-🔥 Trending Tools: What everyone's using today
-📂 Browse Categories: Find tools by type
-```
-
-### 🔍 **Search & Discover** - Find the Perfect Tool
-```
-✏️ Search by name: "ChatGPT", "Claude", "Midjourney"
-🏷️ Browse by category: AI Writing, Coding, Image Generation, etc.
-💰 Filter by price: Free tools only? Paid? Both?
-⚡ Filter by features: API access? Mobile app? Team features?
-```
-
-### 📊 **Compare Tools** - See Side-by-Side**
-```
-Select up to 4 tools and compare:
-- Price & Payment Options
-- Platforms (Web, iPhone, Android, Desktop)
-- Features (Text, Image, Video, Code, etc.)
-- Difficulty Level (Easy to Hard)
-- Best for: What each tool is best at
-```
-
-### ❤️ **Save Favorites** - Your Personal Toolkit
-```
-- Tap heart icon to save any tool
-- Access all your favorites from one place
-- Organize tools you're interested in
-- Quick reference for your AI tech stack
-```
-
-### 📱 **Tool Details** - Everything You Need**
-```
-- Full description
-- Official website link
-- Real pricing info
-- What platforms it works on
-- What it can do (features)
-- How easy it is to use
-- Similar tools recommendations
-```
-
----
-
-# 👥 Tailored for Everyone
-
-## 👤 **For Non-Technical Users / Everyday People**
-
-**You want to:**
-- Find AI tools to help with your work
-- Understand what each tool does
-- Know if it costs money
-- See how easy it is to use
-
-**How Pookies helps:**
-✅ Simple, clear interface - no tech jargon  
-✅ Easy-to-read descriptions  
-✅ Visual categories with colors  
-✅ Shows prices clearly  
-✅ One-click access to tool websites  
-
-**Example:** Need to write faster? Search "Writing" → Find best tools → Compare free options → Click to try.
-
----
-
-## 💼 **For Business Owners / Managers**
-
-**You want to:**
-- Find tools to improve team productivity
-- Compare pricing options
-- Understand what features are included
-- Make smart tool investments
-
-**How Pookies helps:**
-✅ Compare multiple tools at once  
-✅ See all pricing models  
-✅ Check team collaboration features  
-✅ Filter by must-have features  
-✅ Save your top choices  
-
-**Example:** Looking for team writing tools? Compare "Jasper" vs "Copy.ai" vs "Writesonic" - see price, features, and difficulty all at once.
-
----
-
-## 👨‍💻 **For Developers / Tech People**
-
-**You want to:**
-- Find tools with API access
-- Check platform support
-- Integrate into your stack
-- Compare technical capabilities
-
-**How Pookies helps:**
-✅ Filter by API availability  
-✅ See webhook support  
-✅ Check platform compatibility  
-✅ View detailed technical specs  
-✅ Source code available on GitHub  
-
-**See:** [Tech Stack for Developers](#-tech-stack-for-developers) section below.
-
----
-
-## 🚀 **For AI Enthusiasts / Early Adopters**
-
-**You want to:**
-- Discover new AI tools first
-- Stay updated with latest releases
-- Find cutting-edge technology
-- Join the AI revolution
-
-**How Pookies helps:**
-✅ New tools added daily (automatic updates)  
-✅ Trending tools section  
-✅ Featured tools highlighting new releases  
-✅ 45+ specialized categories  
-✅ Compare emerging technologies  
-
----
-
-## 🏢 **For Founders / Investors**
-
-**You want to:**
-- Understand the AI tool landscape
-- See competitor tools
-- Track market trends
-- Find investment opportunities
-
-**How Pookies helps:**
-✅ 3,500+ AI tools indexed  
-✅ Updated daily automatically  
-✅ Organized by market segment  
-✅ Shows what's trending  
-✅ Easy comparison for due diligence  
-
----
-
-# ⚡ Key Features
-
-| Feature | What It Does | Who Needs It |
-|---------|--------------|-------------|
-| 🔍 **Smart Search** | Find any tool instantly | Everyone |
-| 📂 **45+ Categories** | Browse by type (AI Writing, Code, Image, etc.) | Users & Researchers |
-| 📊 **Side-by-Side Compare** | Compare up to 4 tools at once | Professionals & Decision Makers |
-| 💰 **Pricing Info** | See all pricing models clearly | Business Owners & Managers |
-| 📱 **Platform Support** | Check if it works on your device | Tech Users |
-| ⭐ **Save Favorites** | Build your personal tool list | Everyone |
-| 🔄 **Auto-Updates** | New tools added daily | Curious & Trendy Users |
-| 🎨 **Beautiful Design** | Easy to use, pleasant to look at | All Users |
-| ⚡ **Super Fast** | Instant search results | Impatient Users 😊 |
-| 📊 **Feature Filters** | Find tools by specific abilities | Power Users |
-
----
-
-# 🎯 Project Purpose & Goals
-
-The AI ecosystem is expanding at an unprecedented rate, making it difficult to keep track of new tools and their capabilities. Pookies AI Zone solves this by providing:
-
-- **Centralized Discovery**: Access a massive, curated database of AI tools from 3D generation to legal automation.
-- **Deep Comparison**: Side-by-side comparison matrix of up to 4 tools, evaluating pricing models, features, and platform support.
-- **Intelligent Filtering**: Filter tools by category, pricing (Free/Paid), features (API access, Webhooks, etc.), and complexity.
-- **Personalized Experience**: Save favorites locally, track your personal tool stack, and manage preferences.
-- **Visual Clarity**: High-contrast, minimalist UI that categorizes tools using a consistent color-coded system.
-- **Always Fresh**: Automatic updates every day with new AI tools from Product Hunt, GitHub, HuggingFace, and Reddit.
-
----
-
-# 🎨 How It Works (The Magic Behind the Scenes)
-
-## Daily Update System 🤖
-
-Every single day at 6:00 AM (UTC), Pookies AI Zone automatically:
-
-1. **Searches** for new AI tools on:
-   - 📱 Product Hunt (New launches)
-   - 🤖 HuggingFace (New AI models)
-   - ⭐ GitHub (Trending projects)
-   - 💬 Reddit (Community discussions)
-
-2. **Analyzes** each tool to extract:
-   - Name & description
-   - Pricing & free tier info
-   - What it can do (features)
-   - What devices/platforms it works on
-   - Official logo
-
-3. **Updates** the app with new tools:
-   - Your phone syncs automatically
-   - See new tools on next app launch
-   - No manual update needed!
-
-**Result:** Your app is always fresh with the latest AI tools.
-
----
-
-## Data Flow (Simplified)
-
-```
-🌍 External Sources
-   ├─ Product Hunt
-   ├─ GitHub Trending
-   ├─ HuggingFace
-   └─ Reddit
-        │
-        ▼
-   📊 Processing
-   (Extract info, pricing, features)
-        │
-        ▼
-   💾 Database Update
-   (3,500+ tools stored)
-        │
-        ▼
-   ☁️ Cloud Sync
-   (Information synced to cloud)
-        │
-        ▼
-   📱 Your Phone
-   (App shows you the results)
-        │
-        ▼
-   👤 YOU
-   (Discover, compare, save tools)
-```
-<img width="1406" height="1716" alt="image" src="https://github.com/user-attachments/assets/70a36f17-2f00-41c0-809b-efd2f496eea7" />
-
-
----
-
-# 🛠 Tech Stack (For Developers & Tech Curious)
-
-## Frontend (Mobile App)
-- **Framework**: [Expo](https://expo.dev/) + React Native (works on Android & iOS)
-- **Language**: TypeScript (safer, more reliable code)
-- **Speed**: Optimized for instant search & smooth animations
-- **Design**: Beautiful, accessible interface with high contrast
-
-## Backend (Server/Data)
-- **Database**: [Convex](https://www.convex.dev/) (real-time data sync)
-- **Search**: Full-text search indexes (super fast lookups)
-- **API**: FastAPI (Python - handles requests)
-- **Icons**: SimpleIcons CDN (2,500+ brand logos)
-
-## Automation
-- **Scheduler**: GitHub Actions (runs daily at 6 AM)
-- **Processing**: Python scripts (extract & enrich data)
-- **Storage**: JSON files (easy to understand, git-tracked)
-
----
-
-# 📂 For Developers: Build From Source
-
-## Prerequisites
-Before you start, you need:
-- **Node.js** v20+ ([Download](https://nodejs.org/))
-- **Java JDK** 21+ ([Download](https://www.oracle.com/java/technologies/downloads/))
-- **Android SDK** (for building Android app)
-- **Convex Account** (free at [convex.dev](https://www.convex.dev/))
-- **Git** ([Download](https://git-scm.com/))
-
-## Installation & Setup
-
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/Itinerant18/pookies-ai-zone.git
-cd pookies-ai-zone
-```
-
-### Step 2: Install Frontend Dependencies
-```bash
-cd frontend
-npm install
-```
-
-### Step 3: Set Up Environment
-Create a `.env` file in the `frontend` directory:
-```env
-EXPO_PUBLIC_CONVEX_URL=your_convex_url_here
-```
-
-Get your Convex URL from [convex.dev](https://www.convex.dev/)
-
-### Step 4: Start Development Server
-```bash
-npx expo start
-```
-
-Then:
-- **For Android**: Press `a` and follow prompts
-- **For iOS**: Press `i` and follow prompts
-- **For Web**: Press `w` for web preview
-
-### Step 5: Build APK for Distribution
-```bash
-cd frontend/android
-./gradlew assembleRelease
-```
-
-The APK will be at: `frontend/android/app/build/outputs/apk/release/app-release.apk`
-
----
-
-## 🔧 Project Structure
+## 🗂️ Repository Structure
 
 ```
 pookies-ai-zone/
 │
-├── 📱 frontend/                 ← Your mobile app code
-│   ├── app/                    # Screens (Home, Compare, Favorites, etc.)
-│   ├── components/             # Reusable UI components
-│   ├── convex/                 # Backend configuration
-│   ├── theme/                  # Colors, fonts, spacing
-│   ├── services/               # API calls
-│   └── android/                # Android-specific files
+├── 📱 frontend/                    # React Native / Expo application
+│   ├── app/                        # Expo Router file-based routing
+│   │   ├── _layout.tsx             # Root layout: Convex, tabs, onboarding
+│   │   ├── index.tsx               # Home screen (search, browse, featured)
+│   │   ├── categories.tsx          # Category browser
+│   │   ├── favorites.tsx           # Saved tools
+│   │   ├── compare.tsx             # Tool comparison matrix
+│   │   ├── preferences.tsx         # User preference settings
+│   │   ├── tool/[id].tsx           # Individual tool detail page
+│   │   └── category/[id].tsx       # Category drill-down
+│   │
+│   ├── components/
+│   │   ├── compare/                # Comparison UI components
+│   │   ├── navigation/             # Custom Clay tab bar
+│   │   ├── onboarding/             # First-launch flow
+│   │   ├── recommendations/        # Recommendation cards
+│   │   ├── tool/                   # Tool detail sheet, reviews, related
+│   │   └── ui/                     # Reusable design-system primitives
+│   │       ├── clay-button|card|chip|input|search-bar
+│   │       ├── animated-list-item|animated-press
+│   │       ├── shimmer (skeleton loading base)
+│   │       ├── tool-grid-card|tool-list-card (+skeletons)
+│   │       ├── tool-icon
+│   │       ├── global-search
+│   │       ├── comparison-bar
+│   │       └── empty-state
+│   │
+│   ├── convex/                     # Convex serverless functions & schema
+│   │   ├── schema.ts               # Database schema definition
+│   │   ├── tools.ts                # Queries & mutations (CRUD + search)
+│   │   ├── iconUpdates.ts
+│   │   ├── iconFixes.ts
+│   │   └── files.ts
+│   │
+│   ├── data/seedData.ts            # 320+ tools seed dataset
+│   ├── hooks/useApi.ts             # Custom REST API hook
+│   ├── services/api.ts             # ApiService class (REST → FastAPI)
+│   ├── theme/clay.ts               # Clay design tokens, spacing, typography
+│   ├── types/index.ts              # Shared TypeScript interfaces
+│   └── utils/
+│       ├── comparison.ts           # Scoring algorithms (price, ease, features)
+│       ├── preferences.ts          # AsyncStorage preference helpers
+│       └── search.ts               # Client-side search helpers
 │
-├── 🖥️ backend/                 ← Server code
-│   ├── server.py              # REST API
-│   └── requirements.txt        # Python dependencies
+├── 🐍 backend/                     # Python services
+│   ├── server.py                   # FastAPI REST proxy server
+│   ├── requirements.txt            # Python dependencies
+│   └── auto_update/                # Daily AI tool discovery pipeline
+│       ├── main.py                 # Orchestrator (AutoUpdateSystem)
+│       ├── sources.py              # SourceConnector ABC + SourceFactory
+│       ├── scheduler.py            # Cron scheduler
+│       ├── verifier.py             # URL verification + deduplication
+│       ├── enrichment_engine.py    # Tool metadata enrichment
+│       ├── database.py             # Convex write helpers
+│       ├── alerts.py               # Alert manager + audit logger
+│       ├── run_daily.py            # CLI entry point (GitHub Actions)
+│       └── connectors/
+│           ├── futurepedia.py      # Futurepedia connector
+│           └── producthunt.py      # ProductHunt GraphQL connector
 │
-├── 📊 data/                    # Datasets
-│   └── tools-data.json        # All 3,500+ tools (master file)
-│
-├── ⚙️ scripts/                 # Automation scripts
-│   ├── auto_update/           # Daily update system
-│   └── tests/                 # Test files
-│
-├── 🎨 design_guidelines.json   # Design system specs
-├── 📖 README.md               # This file!
-└── 📋 icon-audit-plan.js      # Icon quality checker
+├── 📊 data/                        # Raw data snapshots (JSON)
+├── 🎨 design_guidelines.json       # Design system spec & tool catalogue
+├── 🔧 tools-data.json              # Latest tools snapshot (auto-updated)
+└── .github/workflows/              # GitHub Actions CI/CD
 ```
 
 ---
 
-## 🚀 Development Workflow
+## ⚙️ Tech Stack
 
-### Making Changes to the App
+### Frontend
 
-1. **Make your code changes** in `frontend/`
-2. **Test in development**: `npx expo start`
-3. **Run linter**: `npm run lint`
-4. **Commit changes**: `git commit -m "Your message"`
-5. **Build for testing**: Use Expo Go app on your phone
+| Technology | Version | Role |
+|---|---|---|
+| **React Native** | 0.81.5 | Cross-platform mobile framework |
+| **React** | 19.1.0 | UI component library |
+| **Expo** | 54 | Managed workflow, build tools, native modules |
+| **Expo Router** | 6.x | File-based routing (tabs, deep linking) |
+| **TypeScript** | 5.x | Static typing throughout the frontend |
+| **Convex** | 1.15 | Real-time serverless database + functions |
+| **React Native Reanimated** | 4.1 | Declarative animations (spring, interpolation) |
+| **React Native Gesture Handler** | 2.28 | Touch gesture recognition |
+| **Expo Image** | 3.x | Optimised image loading with caching |
+| **Expo Linear Gradient** | 15 | Gradient backgrounds |
+| **AsyncStorage** | 2.x | Local persistence (favorites, preferences) |
+| **React Navigation (Bottom Tabs)** | 7.x | Tab navigation backing |
+| **@expo/vector-icons (FontAwesome)** | 15 | Iconography |
+| **class-variance-authority** | 0.7 | Variant-driven component styling |
 
-### Adding a New Feature
+### Backend
 
-1. Create a new component in `frontend/components/`
-2. Use the design system from `design_guidelines.json`
-3. Add TypeScript types for type safety
-4. Test on real device using Expo
-5. Submit pull request for review
+| Technology | Version | Role |
+|---|---|---|
+| **Python** | 3.10 | Backend runtime |
+| **FastAPI** | 0.110 | REST API proxy server |
+| **Uvicorn** | 0.25 | ASGI server |
+| **httpx** | 0.27+ | Async HTTP client (Convex calls) |
+| **Pydantic** | 2.6+ | Data validation & serialisation |
+| **requests** | 2.31+ | Sync HTTP for connector scripts |
+| **pandas** | 2.2+ | Data manipulation in enrichment pipeline |
+| **python-dotenv** | 1.0+ | Environment variable management |
+| **typer** | 0.9+ | CLI interface for pipeline scripts |
+| **aiohttp** | 3.9+ | Async HTTP for parallel fetching |
 
-### Working with Backend (Convex)
+### Data & Infrastructure
 
-1. Edit `frontend/convex/schema.ts` to change data structure
-2. Run `npx convex dev` to sync with Convex cloud
-3. Update queries/mutations as needed
-4. Changes auto-deploy!
+| Technology | Role |
+|---|---|
+| **Convex** | Real-time serverless DB, WebSocket subscriptions, file storage |
+| **GitHub Actions** | CI/CD: daily tool update cron at 06:00 UTC |
+| **Expo EAS** | Mobile build & over-the-air update service |
+| **Simple Icons CDN** | Auto-generated tool icons (`cdn.simpleicons.org/{slug}`) |
 
 ---
 
-## 🤖 Automation System
+## 🎨 Design System — Clay / Neumorphic
 
-### Daily Update Workflow
+The app implements a custom **Clay** design language — a soft neumorphic aesthetic with tactile depth.
 
-**File**: `.github/workflows/daily_update.yml`
+### Colour Palette
 
-This runs every day at **6:00 AM UTC**:
+| Token | Value | Usage |
+|---|---|---|
+| `background` | `#EAEFF5` | Screen background (blue-grey) |
+| `surface` | `#FFFFFF` | Cards, inputs, elevated elements |
+| `text.primary` | `#2D3436` | Headings, primary text |
+| `text.secondary` | `#636E72` | Body copy, labels |
+| `text.tertiary` | `#B2BEC3` | Placeholders, captions |
+| `accent.primary` | `#6C5DD3` | Purple — active states, CTAs |
+| `accent.success` | `#00B894` | Mint green |
+| `accent.warning` | `#FDCB6E` | Mustard yellow |
+| `accent.error` | `#FF7675` | Salmon red |
+| `clay.shadowDark` | `#C9D1D9` | Depth shadow |
+| `clay.shadowLight` | `#FFFFFF` | Highlight reflection |
+
+### Design Tokens
 
 ```
-1. Fetch new tools from APIs
-2. Extract pricing, features, platforms
-3. Map to correct icon from SimpleIcons
-4. Add to database
-5. Update tools-data.json
-6. Commit to GitHub
-7. Sync to Convex backend
-8. Notify mobile app (real-time push)
+Spacing:   xs=6  sm=12  md=16  lg=24  xl=24  2xl=32  3xl=44
+Radius:    sm=6  md=12  lg=16  card=24  pill=30  full=9999
+Typography: 12 · 14 · 16 · 18 · 24 · 32 · 40 (px)
+Weights:   400 · 500 · 600 · 700 · 800
 ```
 
-### Required GitHub Secrets
+### Component Library
 
-Set these in your GitHub repository settings:
+| Component | Description |
+|---|---|
+| `ClayCard` | White surface, `border-radius: 24`, inset shadow |
+| `ClayButton` | Primary / secondary / ghost / danger variants |
+| `ClayChip` | Pill-shaped filter chips with active highlight |
+| `ClayInput` / `ClaySearchBar` | Inset, spotlight search style |
+| `Shimmer` | Animated gradient skeleton for loading states |
+| `AnimatedPress` | Spring scale-down haptic feedback on touch |
+| `AnimatedListItem` | Staggered fade-in for list items |
+| `ToolIcon` | Auto-falls back from icon URL → CDN slug → letter avatar |
+| `ComparisonBar` | Floating action bar (count badge + Compare CTA) |
+| `EmptyState` | Centered icon + title + subtitle + optional CTA |
+
+---
+
+## 📱 Screens & Navigation
 
 ```
-CONVEX_URL=https://your-project.convex.cloud
-PRODUCT_HUNT_ACCESS_TOKEN=your_token
-PRODUCT_HUNT_API_KEY=your_key
-PRODUCT_HUNT_API_SECRET=your_secret
+┌─────────────────────────────────────────────────────┐
+│                  Bottom Tab Bar                      │
+│  🏠 Home   📂 Categories   ❤️ Favourites   ⚖️ Compare │
+└─────────────────────────────────────────────────────┘
+```
+
+### 🏠 Home (`/`)
+- Header with tool count badge + preferences shortcut
+- Tap-to-open global search modal (fullscreen)
+- Horizontal scrolling category filter tabs
+- **⭐ Featured** horizontal shelf (when "All" + no search active)
+- 2-column `FlatList` of `ToolGridCard`s with pull-to-refresh
+- Floating `ComparisonBar` (shows when ≥ 1 tool queued)
+- `ToolDetailSheet` bottom sheet on card tap + deep link support
+
+### �� Categories (`/categories`)
+- Vertical list of all 40+ categories with tool counts
+- Category icon mapping via `FontAwesome`
+- Tap → drill into category-filtered tool list
+
+### ❤️ Favourites (`/favorites`)
+- List of tools the user has heart-toggled
+- Persisted in `AsyncStorage` (key: `'favorites'`)
+- Empty state with "Browse Tools" CTA
+- Pull-to-refresh re-syncs local storage
+
+### ⚖️ Compare (`/compare`)
+- Route param: `ids=id1,id2,id3,id4` (up to 4 tools)
+- `ComparisonMatrix` table: pricing · platforms · features · difficulty
+- Option to show only differing rows
+- Score bars per tool
+
+### 🔧 Preferences (`/preferences`) — hidden tab
+- **Priorities** section: 3 step-sliders (price sensitivity, ease, feature richness)
+- **Requirements** section: 4 boolean toggles (mobile, API, free tier, open source)
+- **Use Cases** section: chip grid (writing, coding, design, research, …)
+- `AsyncStorage` persistence with dirty-state save bar
+
+### 📄 Tool Detail (`/tool/[id]` or bottom sheet)
+- Full tool metadata (description, URL, category, pricing, platforms, features)
+- Pros & Cons lists
+- Difficulty badge (1–5)
+- Related tools (similarity scoring)
+- Compare / Favourite actions
+
+---
+
+## 🔄 Data Pipeline
+
+The auto-update system runs every day at **06:00 UTC** via GitHub Actions.
+
+### Pipeline Flow
+
+```
+GitHub Actions (cron: '0 6 * * *')
+    │
+    ▼
+run_daily.py --run-now
+    │
+    ├── SourceFactory.fetch_from_all_sources()
+    │       ├── FuturepediaConnector.fetch_tools()   [confidence: 1.0]
+    │       ├── ProductHuntConnector.fetch_tools()   [confidence: 0.9]
+    │       └── GitHubConnector.fetch_tools()        [confidence: 0.8]
+    │
+    ├── Verifier.verify_tool(tool) × N
+    │       └── URL reachability check, field completeness, deduplication
+    │
+    ├── EnrichmentEngine.enrich(tool) × N
+    │       └── Derive pricing, platforms, features, use_cases metadata
+    │
+    ├── DatabaseManager.add_tools_batch(verified_tools)
+    │       └── convex.addOrUpdateTool mutation (upsert by URL)
+    │
+    ├── AuditLogger.log_run_end(stats)
+    │       └── Logs: fetched / verified / added / skipped / failed
+    │
+    └── Commit tools-data.json to repository [skip ci]
+```
+
+### Data Sources
+
+| Source | API | Confidence |
+|---|---|---|
+| **Futurepedia** | REST API (`api.futurepedia.io`) | 1.0 |
+| **ProductHunt** | GraphQL API (OAuth) | 0.9 |
+| **GitHub** | REST API (trending AI repos) | 0.8 |
+
+### Required Secrets (GitHub Actions)
+
+| Secret | Description |
+|---|---|
+| `CONVEX_URL` | Convex deployment URL |
+| `PRODUCT_HUNT_API_KEY` | ProductHunt OAuth key |
+| `PRODUCT_HUNT_API_SECRET` | ProductHunt OAuth secret |
+| `PRODUCT_HUNT_ACCESS_TOKEN` | ProductHunt access token |
+
+---
+
+## 📊 Data Model
+
+### `tools` Table (Convex Schema)
+
+```typescript
+{
+  _id: string,               // Convex document ID
+  name: string,              // Tool name (e.g. "GitHub Copilot")
+  description: string,       // Short description
+  category: string,          // One of 40+ categories
+  url: string,               // Official tool URL
+  icon_letter: string,       // Fallback letter (first char of name)
+  icon_url?: string,         // CDN or stored icon URL
+  color: string,             // Hex brand colour
+  featured: boolean,         // Show in featured shelf
+  source?: string,           // Origin: "manual" | "producthunt" | ...
+
+  comparison_data?: {
+    pricing?: {
+      model?: string,        // "free" | "freemium" | "paid" | "enterprise" | "open-source"
+      free_tier?: boolean,
+      starting_price?: number,
+      currency?: string,
+      per_user?: boolean,
+      custom_pricing?: boolean,
+    },
+    platforms?: {
+      web, ios, android, macos, windows, linux, api, self_hosted: boolean
+    },
+    features?: {
+      ai_text, ai_image, ai_video, ai_code, ai_audio, ai_chat,
+      api_access, webhooks, sso, team_collaboration,
+      custom_branding, export_pdf, export_csv: boolean
+    },
+    use_cases?: string[],
+    difficulty?: 1 | 2 | 3 | 4 | 5,
+  },
+
+  pros?: string[],
+  cons?: string[],
+  updated_at?: string,       // ISO 8601 timestamp
+}
+```
+
+### Search Indexes
+
+| Index | Search Field | Filter Fields |
+|---|---|---|
+| `search_name_desc` | `name` | `category`, `featured` |
+| `search_desc` | `description` | `category`, `featured` |
+
+---
+
+## 🧠 Intelligence Layer — Scoring Engine
+
+The comparison and recommendation engine lives in `frontend/utils/comparison.ts`.
+
+### Score Formula
+
+```
+ToolScore = (priceScore  × price_sensitivity / 100)
+          + (featureScore × feature_richness / 100)
+          + (easeScore   × ease_of_use_importance / 100)
+          + (platformScore × 0.2)
+```
+
+| Sub-Score | Input | Logic |
+|---|---|---|
+| **priceScore** | pricing.model, free_tier, starting_price | `free=100`, `open-source=95`, `freemium=75`, `paid=40`, `enterprise=30` ± adjustments |
+| **featureScore** | features object | Enabled feature count / 13 max × 100 |
+| **easeScore** | difficulty (1–5) | `(6 - difficulty) / 5 × 100` (inverted scale) |
+| **platformScore** | platforms object | Deduct 25 pts per missing required platform |
+
+### Utility Functions
+
+| Function | Description |
+|---|---|
+| `getSimilarTools()` | Category + feature overlap similarity scoring |
+| `getBetterAlternatives()` | Same-category tools with higher total score |
+| `getBudgetAlternatives()` | Cheaper options in same category |
+| `getToolsByUseCase()` | Filter by declared use cases |
+| `sortTools()` | Multi-criteria sort: price / ease / features / name / score |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+- Python 3.10+
+- A [Convex](https://convex.dev) account and project
+
+### Frontend Setup
+
+```bash
+# 1. Clone repository
+git clone https://github.com/Itinerant18/pookies-ai-zone.git
+cd pookies-ai-zone/frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Set environment variable
+echo "EXPO_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud" > .env
+
+# 4. Run on device / simulator
+npm start          # Expo DevTools
+npm run android    # Android
+npm run ios        # iOS
+npm run web        # Browser
+```
+
+### Backend Setup
+
+```bash
+cd backend
+
+# 1. Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env: EXPO_PUBLIC_CONVEX_URL, PRODUCT_HUNT_API_KEY, etc.
+
+# 4. Start FastAPI server
+uvicorn server:app --reload --port 8000
+```
+
+### Seeding the Database
+
+From the `frontend/` directory with Convex CLI:
+
+```bash
+npx convex run tools:seed          # Seed initial 320+ tools
+npx convex run tools:seedEnriched  # Seed with full comparison data
+npx convex run tools:forceReseed   # Wipe and re-seed from scratch
+```
+
+### Run Auto-Update Pipeline Manually
+
+```bash
+cd backend
+python auto_update/main.py once    # Run once
+python auto_update/main.py daily   # Start daily scheduler
+python auto_update/main.py check   # Availability check only
 ```
 
 ---
 
-# 🎨 Design Philosophy
+## 🗃️ Tool Categories (40+)
 
-The app follows a **"Swiss & High-Contrast Claymorphic"** design system:
+| Category Group | Categories |
+|---|---|
+| **Development** | Editors & IDEs, Dev & Engineering, API & Testing, Database & Backend, Deployment & Hosting |
+| **AI/ML** | LLMs & Chatbots, Assistants & Agents, Image Generation, Video Generation, Music & Audio |
+| **Design** | Creative & Design, Design & UI, 3D & Creative |
+| **Productivity** | Productivity, Note-taking, Task Management, Automation, Form Builders |
+| **Business** | Marketing & Sales, CRM & Support, Analytics, HR & Recruitment, Finance, E-commerce |
+| **Communication** | Chatbots, Writing & Content, Translation, Document Analysis |
+| **Research** | Research & Education, Learning, Data & Analytics |
+| **Security** | Security & Privacy, Monitoring & Observability |
+| **Other** | Health & Wellness, Legal, Industry-Specific, Browsers, Social Media, Spreadsheets |
 
-## Design Principles
+---
 
-| Principle | Implementation | Benefit |
-|-----------|-----------------|---------|
-| **Swiss Design** | Grid-based layout, clean typography | Professional, organized feel |
-| **High Contrast** | Dark text on light, light text on dark | Easy to read, accessible |
-| **Claymorphic** | Soft shadows, rounded corners | Modern, friendly, approachable |
-| **Minimalist** | Only essential elements shown | No clutter, fast to understand |
-| **Color Coding** | Each category gets a unique color | Visual recognition at a glance |
-| **Responsive** | Works on phones, tablets, all sizes | Future-proof |
+## 📐 Language Breakdown
 
-## Color Categories
+| Language | Files | Lines of Code | Share |
+|---|---|---|---|
+| **TypeScript** (`.ts` / `.tsx`) | 51 | ~20,600 | ~73% |
+| **Python** (`.py`) | 28 | ~4,950 | ~17.5% |
+| **JavaScript** (`.js`) | 13 | ~2,880 | ~10% |
+| **JSON** (`.json`) | 13 | config & data | — |
 
-Each of the 45+ tool categories has its own color:
+> **Primary languages:** TypeScript (frontend + Convex), Python (backend + pipeline)
+
+---
+
+## 🏗️ Tech Category Breakdown
 
 ```
-🟢 3D & Creative        → Emerald Green
-🔵 AI Writing           → Bright Blue
-🌸 Image Generation     → Pink
-💜 Code Generation      → Purple
-🧡 Customer Support     → Orange
-🩵 Design Tools         → Cyan
-... and 39 more!
+┌─────────────────────────────────────────────────────────────────┐
+│  FRONTEND (TypeScript / React Native)                   ~73%    │
+│  ┌──────────────────────────┐  ┌────────────────────────────┐   │
+│  │  UI / Screens            │  │  State & Data              │   │
+│  │  • 8 screens (Expo Router│  │  • Convex real-time queries│   │
+│  │  • 25+ UI components     │  │  • AsyncStorage (local)    │   │
+│  │  • Clay design system    │  │  • Scoring algorithms      │   │
+│  └──────────────────────────┘  └────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│  DATABASE (Convex)                                               │
+│  • Serverless, real-time, WebSocket-first                        │
+│  • Schema-validated TypeScript functions                         │
+│  • Built-in full-text search + file storage                      │
+├─────────────────────────────────────────────────────────────────┤
+│  BACKEND (Python)                                       ~17.5%  │
+│  ┌──────────────────────────┐  ┌────────────────────────────┐   │
+│  │  REST API (FastAPI)      │  │  Auto-Update Pipeline      │   │
+│  │  • 4 REST endpoints      │  │  • 3 data source connectors│   │
+│  │  • Convex HTTP proxy     │  │  • Verify + enrich + upsert│   │
+│  │  • CORS middleware       │  │  • Daily GitHub Actions CI │   │
+│  └──────────────────────────┘  └────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│  CI/CD & TOOLING                                        ~10%    │
+│  • GitHub Actions (daily cron)                                   │
+│  • Expo EAS (mobile builds)                                      │
+│  • ESLint, Babel, Metro bundler                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-# 👥 Contributing
+## 🩺 Project Health Score
 
-This project is an R&D initiative by Aniket Karmakar.
+| Dimension | Score | Notes |
+|---|---|---|
+| **Code Organisation** | ★★★★☆ (8/10) | Clear separation: screens / components / utils / convex / services |
+| **Type Safety** | ★★★★☆ (8/10) | Full TypeScript frontend; shared interfaces in `types/index.ts` |
+| **Data Integrity** | ★★★★☆ (8/10) | Convex schema validation; Pydantic in backend |
+| **Performance** | ★★★★☆ (8/10) | FlatList virtualisation, Expo Image caching, skeleton loading, React.memo |
+| **Automation** | ★★★★★ (9/10) | Daily GitHub Actions pipeline keeps data fresh |
+| **Design Consistency** | ★★★★★ (9/10) | Unified Clay design system across all screens |
+| **Accessibility** | ★★★☆☆ (6/10) | `accessibilityLabel`/`accessibilityRole` present; contrast could improve |
+| **Testing** | ★★☆☆☆ (4/10) | Test IDs on components; limited automated test coverage |
+| **Documentation** | ★★★☆☆ (6/10) | `design_guidelines.json` + `docs/UI_UX.md`; inline comments sparse |
+| **Security** | ★★★☆☆ (6/10) | Secrets via GitHub Actions; CORS open (`*`) in dev; no auth layer |
+| **Scalability** | ★★★★☆ (8/10) | Convex serverless scales automatically; pipeline supports new sources |
+| **Dependency Health** | ★★★★☆ (8/10) | Modern, maintained packages (React 19, Expo 54, Convex 1.15) |
 
-### Want to Contribute?
+### 🏆 Overall Score: **7.7 / 10**
 
-1. **Fork** the repository on GitHub
-2. **Create a branch**: `git checkout -b feature/your-feature`
-3. **Make changes** following the design guidelines
-4. **Test thoroughly** on Android and iOS
-5. **Submit a Pull Request** with description
+**Strengths**
+- Real-time data with zero backend ops overhead (Convex)
+- Thoughtfully crafted, cohesive Clay design system
+- Automated daily discovery pipeline for fresh content
+- Rich comparison engine with preference-based scoring
+- Cross-platform (iOS, Android, Web) from a single codebase
+- Modern stack (React 19, Expo 54, TypeScript 5.x)
 
-### Code Guidelines
-
-- ✅ Follow TypeScript best practices
-- ✅ Use `StyleSheet.create()` for all styles
-- ✅ Add `testID` to interactive elements
-- ✅ Include `accessibilityLabel` for accessibility
-- ✅ Run `npm run lint` before committing
-- ✅ Write clean, documented code
-
-### Important Files for Contributors
-
-- `design_guidelines.json` - Design system specs
-- `frontend/theme/` - Color & spacing tokens
-- `frontend/convex/schema.ts` - Data structure
-- `.github/workflows/` - Automation workflows
-
----
-
-# ❓ FAQ (Frequently Asked Questions)
-
-## General Questions
-
-### Q: Is this free?
-**A:** Yes! The app is completely free to download and use. All 3,500+ tools are free to browse.
-
-### Q: How often is it updated?
-**A:** Every single day at 6:00 AM UTC. New AI tools are automatically discovered and added.
-
-### Q: Do I need an account?
-**A:** No account needed! Your favorites are saved locally on your phone.
-
-### Q: Is my data safe?
-**A:** Yes! Your favorites and preferences stay on your phone. We don't collect personal data.
-
-### Q: Will this work on my phone?
-**A:** If it's Android, yes! iPhone support coming soon.
+**Areas for Improvement**
+- Test coverage is low — unit tests for scoring utils and integration tests for Convex queries would add confidence
+- CORS is fully open (`*`) — should be locked down for production
+- No authentication layer — adding user accounts would enable cloud-synced favourites
+- Some Python files in `auto_update/` are large (enrichment_engine.py ~23 KB) and would benefit from refactoring
 
 ---
 
-## App Questions
+## 🌐 Stack Proficiency Guide
 
-### Q: Why can't I find a tool I know?
-**A:** The tool might be very new. Check back tomorrow after the daily update, or let us know on GitHub!
+### For Frontend Developers
 
-### Q: How accurate is the pricing info?
-**A:** Updated daily from official sources. But always check the tool's website for current pricing.
+The frontend is a standard **Expo Router** application. Key concepts:
+- Routing via file names in `app/` (similar to Next.js pages)
+- Data fetching via `useQuery(api.tools.get, args)` — Convex handles caching and real-time updates automatically
+- State: Convex for remote state, `useState` for UI, `AsyncStorage` for persistence
+- Styling: `StyleSheet.create()` only — no inline styles except for dynamic values
 
-### Q: Can I suggest a tool to add?
-**A:** Definitely! Open an issue on GitHub or contact us.
+### For Backend Developers
 
-### Q: What if the comparison isn't showing all features?
-**A:** Some new tools are still being added to the database. Check back soon!
+The Python backend has two independent concerns:
+1. **`server.py`** — A thin FastAPI proxy. Add new endpoints by adding `@api_router.get("/endpoint")` functions that call `await call_convex("tools/functionName", args)`
+2. **`auto_update/`** — The data pipeline. Add a new source by:
+   - Creating `connectors/mysource.py` extending `SourceConnector`
+   - Registering it in `SourceFactory.create_connector()` in `sources.py`
 
----
+### For Database Engineers
 
-## Technical Questions
-
-### Q: Can I use this for commercial purposes?
-**A:** Check the license. The project is under R&D status.
-
-### Q: Is the source code available?
-**A:** Yes! It's on GitHub. You can modify it for your own use.
-
-### Q: How can I contribute?
-**A:** See the "Contributing" section above!
-
-### Q: I found a bug, what do I do?
-**A:** Report it on GitHub Issues with details about what happened.
+All database logic is in `frontend/convex/tools.ts` (TypeScript, runs server-side on Convex):
+- **Queries** = read-only, auto-cached, real-time subscribed by clients
+- **Mutations** = write operations, ACID-safe
+- Schema lives in `frontend/convex/schema.ts`
 
 ---
 
-# 📊 Statistics
+## 📦 Build & Deploy
 
-| Metric | Value |
-|--------|-------|
-| **Tools Indexed** | 3,500+ |
-| **Categories** | 45+ |
-| **Features Tracked** | 20+ |
-| **Data Sources** | 4 (Product Hunt, GitHub, HuggingFace, Reddit) |
-| **Update Frequency** | Daily (6:00 AM UTC) |
-| **Supported Platforms** | Android (iOS coming soon) |
-| **Download Size** | 45 MB |
-| **Search Speed** | <100ms |
+### Android APK (pre-built)
+```bash
+# Debug APK (already included in repo)
+frontend/android/app/build/outputs/apk/debug/app-debug.apk
 
----
+# Release APK
+frontend/android/app/build/outputs/apk/release/app-release.apk
+```
 
-# 🗺️ Roadmap
+### Expo EAS Build
+```bash
+cd frontend
+eas build --platform android --profile development
+eas build --platform ios --profile development
+```
 
-### Current Version (v1.0)
-- ✅ 3,500+ AI tools indexed
-- ✅ 45+ categories
-- ✅ Tool comparison (up to 4 tools)
-- ✅ Favorites system
-- ✅ Daily auto-updates
-- ✅ High-contrast design
-
-### Coming Soon (v1.1)
-- 🔄 iOS support
-- 🔄 Advanced filtering
-- 🔄 User reviews & ratings
-- 🔄 Tool recommendations (AI-powered)
-
-### Future (v2.0+)
-- 🔮 Web version
-- 🔮 Desktop app (Windows, Mac)
-- 🔮 Tool pricing alerts
-- 🔮 Integration marketplace
-- 🔮 Community discussions
-- 🔮 Analytics dashboard
+### Convex Deploy
+```bash
+cd frontend
+npx convex deploy          # Production deployment
+npx convex dev             # Local development with hot reload
+```
 
 ---
 
-# 📞 Support & Contact
+## 🤝 Contributing
 
-### Having Issues?
-
-1. **Check FAQ** - Most questions answered above
-2. **GitHub Issues** - Report bugs or request features
-3. **Documentation** - Technical details available
-4. **GitHub Discussions** - Ask questions, share ideas
-
-### Project Links
-
-- 🔗 **GitHub**: [github.com/Itinerant18/pookies-ai-zone](https://github.com/Itinerant18/pookies-ai-zone)
-- 📧 **Email**: Check GitHub profile
-- 🐛 **Bug Reports**: Use GitHub Issues
-- 💡 **Feature Requests**: Use GitHub Discussions
-
----
-
-# 📜 License & Credits
-
-**Project**: Pookies AI Zone  
-**Created by**: Aniket Karmakar RnD  
-**Status**: Research & Development
-
-### Built With
-
-- ⭐ [Expo](https://expo.dev/) - React Native framework
-- ⭐ [Convex](https://www.convex.dev/) - Backend-as-a-Service
-- ⭐ [SimpleIcons](https://simpleicons.org/) - Brand icons
-- ⭐ [React Native](https://reactnative.dev/) - Mobile framework
-- ⭐ [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript
-
-### Icons & Resources
-
-- Icons: [SimpleIcons](https://simpleicons.org/)
-- Design Inspiration: Swiss design principles
-- Color System: High-contrast accessibility standards
-
----
-
-# 🌟 Show Your Support
-
-If you find Pookies AI Zone useful:
-
-- ⭐ **Star** the GitHub repository
-- 🐛 **Report bugs** if you find them
-- 💡 **Suggest features** you'd like to see
-- 👥 **Share** with friends interested in AI
-- 🤝 **Contribute** code improvements
-- 📢 **Spread the word** on social media
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Add tool data: update `frontend/data/seedData.ts` and/or trigger the pipeline
+4. Add new categories: update `design_guidelines.json` → `data_seeding.categories`
+5. Commit with conventional commits: `git commit -m 'feat: add new source connector'`
+6. Open a Pull Request
 
 ---
 
 <div align="center">
 
-### Made with ❤️ by Aniket Karmakar
+**Built with 💜 using React Native, Convex, and Python**
 
-**Discover. Compare. Decide.**
-
-*Your AI tool companion in the rapidly evolving AI landscape*
+*Keeping developers informed about the AI tooling landscape — one daily update at a time.*
 
 </div>
-
----
-
-
