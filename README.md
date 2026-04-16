@@ -18,6 +18,12 @@
 
 [Features](#-features) · [Architecture](#-architecture) · [Tech Stack](#-tech-stack) · [Screens](#-screens--navigation) · [Getting Started](#-getting-started) · [Data Pipeline](#-data-pipeline) · [Project Health](#-project-health)
 
+<br/>
+
+<img src="https://github.com/user-attachments/assets/e641ca9e-81c6-400c-80d4-ad7482d801a4" width="30%" alt="Home screen — AI Tools list" />
+<img src="https://github.com/user-attachments/assets/567386b6-15c2-448a-8ab1-e1b3b9db0e2f" width="30%" alt="Home screen — tool grid" />
+<img src="https://github.com/user-attachments/assets/3d4a95a1-286e-4026-a2f6-2d2320b858c2" width="30%" alt="Tool detail sheet — Bruno" />
+
 </div>
 
 ---
@@ -58,84 +64,90 @@ The app combines:
 
 ## 🏛️ Architecture
 
-### System Layers
+### Architecture Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        PRESENTATION LAYER                           │
-│  React Native + Expo Router (TypeScript)                            │
-│  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌────────┐ ┌──────────┐ │
-│  │  Home    │ │ Categories │ │Favourites│ │Compare │ │Prefs     │ │
-│  │ /index   │ │/categories │ │/favorites│ │/compare│ │/pref..   │ │
-│  └──────────┘ └────────────┘ └──────────┘ └────────┘ └──────────┘ │
-│   ↓ useQuery / useMutation (Convex React hooks)                     │
-└─────────────────────────────────────────────────────────────────────┘
-          │ Real-time WebSocket
-          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                       DATA LAYER  (Convex)                          │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │  tools table                                                  │   │
-│  │  • Full-text search indexes (name, description)              │   │
-│  │  • Queries: get, getById, getByIds, getCategories, stats     │   │
-│  │  • Mutations: addTool, addOrUpdateTool, seed, forceReseed    │   │
-│  │  • File storage for custom icons (Convex Storage)            │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────┘
-          │ HTTP POST /api/*
-          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                  REST API LAYER  (FastAPI / Python)                  │
-│  GET /api/tools       → paginated, filterable tool list             │
-│  GET /api/tools/{id}  → single tool detail                          │
-│  GET /api/categories  → category list with counts                   │
-│  GET /api/filters     → filter options (categories, sort options)   │
-└─────────────────────────────────────────────────────────────────────┘
-          │ async HTTP (httpx) — proxies to Convex
-          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│               AUTO-UPDATE PIPELINE  (Python + GitHub Actions)        │
-│  ┌──────────┐   ┌────────────┐   ┌──────────┐   ┌──────────────┐   │
-│  │ Sources  │──▶│  Verifier  │──▶│ Enricher │──▶│Convex Updater│   │
-│  │  • PH    │   │ (URL check,│   │(pricing, │   │ addOrUpdate  │   │
-│  │  • FP    │   │  de-dup)   │   │ features)│   │ Mutation     │   │
-│  │  • GH    │   └────────────┘   └──────────┘   └──────────────┘   │
-│  └──────────┘                                                        │
-│           Scheduled: 06:00 UTC daily via GitHub Actions cron        │
-└─────────────────────────────────────────────────────────────────────┘
-```
+```mermaid
+flowchart TB
+    %% Styling
+    classDef client fill:#e0f7fa,stroke:#006064,stroke-width:2px;
+    classDef convex fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef api fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef pipeline fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+    classDef storage fill:#eceff1,stroke:#455a64,stroke-width:2px;
 
-### Data Flow Diagram
+    subgraph ClientLayer ["Presentation Layer & User Flow : React Native + Expo Router"]
+        direction TB
+        Launch([Launch App]) --> Check{Onboarding Complete?}
+        Check -- No --> SetAsyncStorage[(AsyncStorage:<br>onboarding_complete)]
+        Check -- Yes --> Provider((ConvexProvider<br>WebSocket Active))
 
-```
- User Device
-     │
-     │  Launch App
-     ▼
-┌─────────────────────┐
-│  Onboarding Check   │ ◄── AsyncStorage: "onboarding_complete"
-│  (first-time only)  │
-└────────┬────────────┘
-         │ Complete
-         ▼
-┌─────────────────────────────────────────────────────┐
-│           ConvexProvider (WebSocket connected)       │
-│  ┌──────────────────────────────────────────────┐   │
-│  │          Bottom Tab Navigator                │   │
-│  │  Home │ Categories │ Favourites │ Compare    │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                      │
-│  ┌──────────────┐     ┌───────────────────────────┐ │
-│  │  useQuery    │────▶│  Convex DB (tools table)  │ │
-│  │  api.tools.* │     │  Real-time subscriptions  │ │
-│  └──────────────┘     └───────────────────────────┘ │
-│                                                      │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  Local State (AsyncStorage)                  │    │
-│  │  • favourites[]  • comparing[]               │    │
-│  │  • userPreferences                           │    │
-│  └─────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────┘
+        subgraph LocalState [Local Storage]
+            AsyncStorage[(AsyncStorage)]
+            AsyncStorage -.-> |"favourites[]"| State1([Favorites])
+            AsyncStorage -.-> |"comparing[]"| State2([Compare List])
+            AsyncStorage -.-> |userPreferences| State3([Preferences])
+        end
+
+        subgraph Nav [Bottom Tab Navigator]
+            direction LR
+            Home["Home<br>/index"]
+            Cat["Categories<br>/categories"]
+            Fav["Favourites<br>/favorites"]
+            Comp["Compare<br>/compare"]
+            Pref["Prefs<br>/preferences"]
+        end
+
+        Provider --> Nav
+        Nav -.-> |Read/Write| LocalState
+
+        Hooks("Convex React Hooks:<br>useQuery / useMutation")
+        Nav --> Hooks
+    end
+    class ClientLayer client;
+    class LocalState,AsyncStorage storage;
+
+    subgraph ConvexLayer [Data Layer : Convex]
+        direction TB
+        DB[("Convex DB:<br>tools table")]
+        Indexes["Full-text Search Indexes:<br>name, description"]
+        FileStore["Convex Storage:<br>Custom Icons"]
+
+        DB --- Indexes
+        DB --- FileStore
+
+        Queries["Queries:<br>get, getById, getByIds, getCategories, stats"]
+        Mutations["Mutations:<br>addTool, addOrUpdateTool, seed, forceReseed"]
+
+        Queries -.-> DB
+        Mutations -.-> DB
+    end
+    class ConvexLayer convex;
+
+    subgraph APILayer [REST API Layer : FastAPI / Python]
+        direction TB
+        End1["GET /api/tools<br>paginated, filterable"]
+        End2["GET /api/tools/{id}<br>single tool"]
+        End3["GET /api/categories<br>list with counts"]
+        End4["GET /api/filters<br>categories, sort options"]
+    end
+    class APILayer api;
+
+    subgraph PipelineLayer [Auto-Update Pipeline : Python + GitHub Actions]
+        direction LR
+        Cron(("Cron: 06:00 UTC")) --> Sources["Sources:<br>PH, FP, GH"]
+        Sources --> Verifier["Verifier:<br>URL check, de-dup"]
+        Verifier --> Enricher["Enricher:<br>pricing, features"]
+        Enricher --> Updater["Convex Updater:<br>addOrUpdate Mutation"]
+    end
+    class PipelineLayer pipeline;
+
+    %% Inter-Layer Connections
+    Hooks <===> |Real-time WebSocket| Queries
+    Hooks <===> |Real-time WebSocket| Mutations
+
+    APILayer <--> |async HTTP httpx proxy| ConvexLayer
+
+    Updater --> |"HTTP POST /api/*"| Mutations
 ```
 
 ### Component Tree
