@@ -18,6 +18,12 @@
 
 [Features](#-features) · [Architecture](#-architecture) · [Tech Stack](#-tech-stack) · [Screens](#-screens--navigation) · [Getting Started](#-getting-started) · [Data Pipeline](#-data-pipeline) · [Project Health](#-project-health)
 
+<br/>
+
+<img src="https://github.com/user-attachments/assets/e641ca9e-81c6-400c-80d4-ad7482d801a4" width="30%" alt="Home screen — AI Tools list" />
+<img src="https://github.com/user-attachments/assets/567386b6-15c2-448a-8ab1-e1b3b9db0e2f" width="30%" alt="Home screen — tool grid" />
+<img src="https://github.com/user-attachments/assets/3d4a95a1-286e-4026-a2f6-2d2320b858c2" width="30%" alt="Tool detail sheet — Bruno" />
+
 </div>
 
 ---
